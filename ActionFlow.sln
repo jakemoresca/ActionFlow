@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionFlow.Tests", "ActionFlow.Tests\ActionFlow.Tests.csproj", "{AACB88C1-1FA4-4D10-B6DD-F5F1CEDAFD62}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionFlow", "ActionFlow\ActionFlow.csproj", "{EFBB5884-ED06-4DC3-8324-3C14C7991ECB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AACB88C1-1FA4-4D10-B6DD-F5F1CEDAFD62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AACB88C1-1FA4-4D10-B6DD-F5F1CEDAFD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AACB88C1-1FA4-4D10-B6DD-F5F1CEDAFD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AACB88C1-1FA4-4D10-B6DD-F5F1CEDAFD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFBB5884-ED06-4DC3-8324-3C14C7991ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFBB5884-ED06-4DC3-8324-3C14C7991ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFBB5884-ED06-4DC3-8324-3C14C7991ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFBB5884-ED06-4DC3-8324-3C14C7991ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {157E2014-67B6-43AA-85D5-304BD88DE941}
+	EndGlobalSection
+EndGlobal
