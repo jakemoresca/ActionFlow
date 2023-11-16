@@ -9,7 +9,6 @@ namespace ActionFlow.Rules
         string Name { get; set; }
         string RuleType { get; }
         string SuccessEvent { get; set; }
-        Dictionary<string, string> Variables { get; set; }
 
         Rule AsRuleEngineRule();
     }

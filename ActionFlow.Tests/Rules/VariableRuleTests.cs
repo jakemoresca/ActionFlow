@@ -16,7 +16,9 @@ namespace ActionFlow.Tests.Rules
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             workflowProvider.GetAllWorkflows().Returns(CreateBasicWorkflow());
 
-            var rulesEngine = new RuleEngineWrapper(workflowProvider);
+            var resettingsProvider = Substitute.For<IReSettingsProvider>();
+
+            var rulesEngine = new RuleEngineWrapper(workflowProvider, resettingsProvider);
 
             //Act
             var resultList = rulesEngine.ExecuteAllRulesAsync("Test Workflow Rule 1", new object[] { }).Result;
@@ -33,7 +35,9 @@ namespace ActionFlow.Tests.Rules
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             workflowProvider.GetAllWorkflows().Returns(CreateConditionExpressionWorkflow());
 
-            var rulesEngine = new RuleEngineWrapper(workflowProvider);
+            var resettingsProvider = Substitute.For<IReSettingsProvider>();
+
+            var rulesEngine = new RuleEngineWrapper(workflowProvider, resettingsProvider);
 
             //Act
             var resultList = rulesEngine.ExecuteAllRulesAsync("Test Workflow Rule 1", new object[] { }).Result;

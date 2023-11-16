@@ -15,7 +15,10 @@ namespace ActionFlow.Tests.Engine
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             workflowProvider.GetAllWorkflows().Returns(CreateFakeWorkflows());
 
-            var rulesEngine = new RuleEngineWrapper(workflowProvider);
+            var resettingsProvider = Substitute.For<IReSettingsProvider>();
+            resettingsProvider.GetReSettings().Returns(CreateFakeResettings());
+
+            var rulesEngine = new RuleEngineWrapper(workflowProvider, resettingsProvider);
 
             //Act
             dynamic datas = new ExpandoObject();
@@ -51,6 +54,12 @@ namespace ActionFlow.Tests.Engine
             workflows.Add(workflow);
 
             return workflows;
+        }
+
+        private ReSettings CreateFakeResettings()
+        {
+            var reSettingsWithCustomTypes = new ReSettings();
+            return reSettingsWithCustomTypes;
         }
     }
 }

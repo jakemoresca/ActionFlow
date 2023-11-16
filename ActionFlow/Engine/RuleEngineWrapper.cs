@@ -7,9 +7,9 @@ namespace ActionFlow.Engine
     {
         private readonly IRulesEngine _rulesEngine;
 
-        public RuleEngineWrapper(IWorkflowProvider workflowProvider)
+        public RuleEngineWrapper(IWorkflowProvider workflowProvider, IReSettingsProvider reSettingsProvider)
         {
-            _rulesEngine = new RulesEngine.RulesEngine(workflowProvider.GetAllWorkflows().ToArray(), null);
+            _rulesEngine = new RulesEngine.RulesEngine(workflowProvider.GetAllWorkflows().ToArray(), reSettingsProvider.GetReSettings());
         }
 
         public ValueTask<List<RuleResultTree>> ExecuteAllRulesAsync(string workflowName, params object[] inputs)
