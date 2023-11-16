@@ -37,6 +37,8 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Install dotnet code coverage
+        run: dotnet tool install --global dotnet-coverage
       - name: Restore dependencies
         run: dotnet restore
       - name: Build and analyze
@@ -45,7 +47,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"rydersir_action-flow" /o:"rydersir" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"rydersir_action-flow" /o:"rydersir" 
+              /d:sonar.token="${{ secrets.SONAR_TOKEN }}" 
+              /d:sonar.host.url="https://sonarcloud.io"
+              /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
           dotnet build --no-restore
-          dotnet test --no-build --verbosity normal
+          dotnet-coverage collect "dotnet test --no-build --verbosity normal" -f xml -o "coverage.xml"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
