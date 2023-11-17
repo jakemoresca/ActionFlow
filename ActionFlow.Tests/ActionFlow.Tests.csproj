@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
@@ -19,6 +20,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ActionFlow\ActionFlow.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Actions\" />
   </ItemGroup>
 
 </Project>

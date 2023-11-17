@@ -1,6 +1,6 @@
-﻿using RulesEngine.Models;
+﻿using ActionFlow.Domain.Engine;
 
-namespace ActionFlow.Engine
+namespace ActionFlow.Engine.Providers
 {
     public interface IWorkflowProvider
     {

@@ -1,8 +1,8 @@
-﻿using ActionFlow.Domain;
+﻿using ActionFlow.Domain.Actions;
 using ActionFlow.Helpers;
 using RulesEngine.Models;
 
-namespace ActionFlow.Engine
+namespace ActionFlow.Engine.Providers
 {
     public class ReSettingsProvider : IReSettingsProvider
     {
@@ -10,7 +10,7 @@ namespace ActionFlow.Engine
         {
             var reSettingsWithCustomTypes = new ReSettings
             {
-                CustomTypes = new Type[] { typeof(ApiClient), typeof(ApiCallResult) }
+                CustomTypes = new Type[] { typeof(ApiClient), typeof(ApiCallResult) },
             };
 
             return reSettingsWithCustomTypes;

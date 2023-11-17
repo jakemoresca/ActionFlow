@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace ActionFlow.Domain
+namespace ActionFlow.Domain.Actions
 {
     public class ApiCallResult
     {

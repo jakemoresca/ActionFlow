@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
     <PackageReference Include="RulesEngine" Version="5.0.2" />
   </ItemGroup>
 

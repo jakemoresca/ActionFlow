@@ -1,4 +1,4 @@
-﻿using ActionFlow.Domain;
+﻿using ActionFlow.Domain.Actions;
 using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 
