@@ -1,4 +1,6 @@
-﻿namespace ActionFlow.Actions
+﻿using ExecutionContext = ActionFlow.Engine.ExecutionContext;
+
+namespace ActionFlow.Actions
 {
     public interface IActionBase
     {

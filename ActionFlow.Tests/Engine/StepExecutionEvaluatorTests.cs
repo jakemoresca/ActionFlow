@@ -3,7 +3,8 @@ using ActionFlow.Domain.Engine;
 using ActionFlow.Engine;
 using ActionFlow.Engine.Factories;
 using NSubstitute;
-using ExecutionContext = ActionFlow.Domain.Engine.ExecutionContext;
+using NSubstitute.ReceivedExtensions;
+using ExecutionContext = ActionFlow.Engine.ExecutionContext;
 
 namespace ActionFlow.Tests.Engine
 {
@@ -15,16 +16,15 @@ namespace ActionFlow.Tests.Engine
         {
             //Arrange
             var step = new Step("test", "action", null, "age == 3");
-            var executionContext = new ExecutionContext
+            var executionContext = new ExecutionContext();
+            var ageParameter = new Parameter
             {
-                Parameters =
-                {
-                    new Parameter { Name = "age", Expression = "1+2"}
-                }
+                Name = "age",
+                Expression = "1 + 2"
             };
 
+            executionContext.AddOrUpdateParameter(ageParameter);
             var action = Substitute.For<ActionBase>();
-
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("action").Returns(action);
 
@@ -34,7 +34,8 @@ namespace ActionFlow.Tests.Engine
             var result = sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Received(1);
+            stepActionFactory.Get("action").ReceivedCalls();
+            action.ReceivedWithAnyArgs(2);
         }
 
         [TestMethod]
@@ -42,16 +43,15 @@ namespace ActionFlow.Tests.Engine
         {
             //Arrange
             var step = new Step("test", "action", null, "age == 3");
-            var executionContext = new ExecutionContext
+            var executionContext = new ExecutionContext();
+            var ageParameter = new Parameter
             {
-                Parameters =
-                {
-                    new Parameter { Name = "age", Expression = "2+2"}
-                }
+                Name = "age",
+                Expression = "2 + 2"
             };
 
+            executionContext.AddOrUpdateParameter(ageParameter);
             var action = Substitute.For<ActionBase>();
-
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("action").Returns(action);
 
@@ -62,6 +62,40 @@ namespace ActionFlow.Tests.Engine
 
             //Assert
             stepActionFactory.Received(0);
+        }
+
+        [TestMethod]
+        public void When_evaluating_step_with_a_step_property_it_should_build_action_properties()
+        {
+            //Arrange
+            var actionProperties = new Dictionary<string, object>
+            {
+                { "test", true },
+                { "testA", "string" },
+                { "testB", 1 },
+            };
+            var step = new Step("test", "action", actionProperties, "age == 3");
+            var executionContext = Substitute.For<ExecutionContext>();
+            var ageParameter = new Parameter
+            {
+                Name = "age",
+                Expression = "1 + 2"
+            };
+
+            executionContext.AddOrUpdateParameter(ageParameter);
+            var action = Substitute.For<ActionBase>();
+            var stepActionFactory = Substitute.For<IStepActionFactory>();
+            stepActionFactory.Get("action").Returns(action);
+
+            var sut = new StepExecutionEvaluator();
+
+            //Act
+            var result = sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
+
+            //Assert
+            stepActionFactory.Get("action").ReceivedCalls();
+            action.ReceivedWithAnyArgs(2);
+            executionContext.ReceivedWithAnyArgs(2);
         }
     }
 }

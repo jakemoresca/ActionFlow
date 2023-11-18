@@ -38,12 +38,12 @@ namespace ActionFlow.Tests.Engine
             List<Workflow> workflows = new List<Workflow>();
             var steps = new List<Step>
             {
-                new Step("initialize", "Variable", new Dictionary<string, string>
+                new Step("initialize", "Variable", new Dictionary<string, object>
                 {
                     { "age", "1" },
                     { "canWalk", "true" },
                 }),
-                new Step("test variable value", "Variable", new Dictionary<string, string>(), "age == 1 && canWalk == true")
+                new Step("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
             };
 
             Workflow workflow = new Workflow("Test Workflow Rule 1", steps);

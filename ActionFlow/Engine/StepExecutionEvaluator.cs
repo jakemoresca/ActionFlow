@@ -1,7 +1,5 @@
 ﻿using ActionFlow.Domain.Engine;
 using ActionFlow.Engine.Factories;
-using DynamicExpresso;
-using ExecutionContext = ActionFlow.Domain.Engine.ExecutionContext;
 
 namespace ActionFlow.Engine
 {
@@ -9,28 +7,29 @@ namespace ActionFlow.Engine
     {
         public ExecutionContext EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory)
         {
-            var interpreter = BuildInterpreterVariables(new Interpreter(), executionContext);
-
-            var shouldExecuteStep = interpreter.Eval<bool>(step.ConditionExpression);
+            var shouldExecuteStep = executionContext.EvaluateExpression<bool>(step.ConditionExpression!);
 
             if (shouldExecuteStep)
             {
                 var action = stepActionFactory.Get(step.ActionType);
-                //run step action
-                //build new execution context
+                var updatedExecutionContext = BuildActionProperties(step, executionContext);
+                action.SetExecutionContext(updatedExecutionContext);
+                action.ExecuteAction();
             }
+
+            executionContext.ClearActionProperties();
 
             return executionContext;
         }
 
-        private Interpreter BuildInterpreterVariables(Interpreter interpreter, ExecutionContext executionContext)
+        private ExecutionContext BuildActionProperties(Step step, ExecutionContext executionContext) 
         {
-            foreach (var parameter in executionContext.Parameters!)
+            foreach (var property in step.Properties!)
             {
-                interpreter.SetVariable(parameter.Name, interpreter.Eval(parameter.Expression));
+                executionContext.AddOrUpdateActionProperty(property.Key, property.Value);
             }
 
-            return interpreter;
+            return executionContext;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using ActionFlow.Domain.Engine;
 using ActionFlow.Engine.Factories;
 using ActionFlow.Engine.Providers;
-using ExecutionContext = ActionFlow.Domain.Engine.ExecutionContext;
 
 namespace ActionFlow.Engine
 {
@@ -63,7 +62,12 @@ namespace ActionFlow.Engine
         private ExecutionContext BuildExecutionContext(params Parameter[] inputs)
         {
             var executionContext = new ExecutionContext();
-            executionContext.Parameters.AddRange(inputs);
+
+            foreach (var input in inputs)
+            {
+                executionContext.AddOrUpdateParameter(input);
+            }
+
             return executionContext;
         }
     }
