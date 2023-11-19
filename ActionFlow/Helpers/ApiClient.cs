@@ -1,23 +1,31 @@
 ﻿using ActionFlow.Domain.Actions;
 using Newtonsoft.Json;
+using System.Net.Http;
 using System.Text.Json.Nodes;
 
 namespace ActionFlow.Helpers
 {
-    public static class ApiClient
+    public class ApiClient : IApiClient
     {
-        public static async Task<ApiCallResult> CallGet(string url, string? requestHeaders = null)
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public ApiClient(IHttpClientFactory httpClientFactory)
         {
-            var httpClient = new HttpClient();
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<ApiCallResult> CallGet(string url, Dictionary<string, string>? requestHeaders = null)
+        {
+            using var httpClient = _httpClientFactory.CreateClient();
             AddRequestHeaders(requestHeaders, httpClient);
 
             var result = await httpClient.GetAsync(url);
             return await CreateApiCallResult(result);
         }
 
-        public static async Task<ApiCallResult> CallPost(string url, string data, string? requestHeaders = null)
+        public async Task<ApiCallResult> CallPost(string url, string data, Dictionary<string, string>? requestHeaders = null)
         {
-            var httpClient = new HttpClient();
+            using var httpClient = _httpClientFactory.CreateClient();
             AddRequestHeaders(requestHeaders, httpClient);
 
             var json = JsonNode.Parse(data);
@@ -27,19 +35,18 @@ namespace ActionFlow.Helpers
             return await CreateApiCallResult(result);
         }
 
-        private static void AddRequestHeaders(string? requestHeaders, HttpClient httpClient)
+        private void AddRequestHeaders(Dictionary<string, string>? requestHeaders, HttpClient httpClient)
         {
             if (requestHeaders != null)
             {
-                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(requestHeaders);
-                foreach (var header in headerDictionary!)
+                foreach (var header in requestHeaders!)
                 {
                     httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                 }
             }
         }
 
-        private static async Task<ApiCallResult> CreateApiCallResult(HttpResponseMessage result)
+        private async Task<ApiCallResult> CreateApiCallResult(HttpResponseMessage result)
         {
             var jsonBody = JsonNode.Parse(await result.Content.ReadAsStringAsync());
             var headers = result.Headers.ToDictionary(x => x.Key, x => x.Value);

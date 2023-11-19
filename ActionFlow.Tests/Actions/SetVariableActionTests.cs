@@ -6,7 +6,7 @@ namespace ActionFlow.Tests.Actions
     public class SetVariableActionTests
     {
         [TestMethod]
-        public void When_executing_it_should_set_new_variable()
+        public async Task When_executing_it_should_set_new_variable()
         {
             //Arrange
             var sut = new SetVariableAction();
@@ -20,7 +20,7 @@ namespace ActionFlow.Tests.Actions
             sut.SetExecutionContext(executionContext);
 
             //Act
-            sut.ExecuteAction();
+            await sut.ExecuteAction();
 
             //Assert
             Assert.AreEqual(18, executionContext.EvaluateExpression<int>("age"));

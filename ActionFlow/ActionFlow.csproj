@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="RulesEngine" Version="5.0.2" />
   </ItemGroup>
 

@@ -16,7 +16,12 @@ namespace ActionFlow.Engine
 
         public void AddOrUpdateParameter(Domain.Engine.Parameter parameter)
         {
-            _intepreter.SetVariable(parameter.Name, _intepreter.Eval(parameter.Expression));
+            AddOrUpdateParameter(parameter.Name, _intepreter.Eval(parameter.Expression));
+        }
+
+        public void AddOrUpdateParameter(string name, object value)
+        {
+            _intepreter.SetVariable(name, value);
         }
 
         public T GetParameter<T>(string key)
@@ -41,14 +46,14 @@ namespace ActionFlow.Engine
             }
         }
 
-        public T GetActionProperty<T>(string key)
+        public T? GetActionProperty<T>(string key)
         {
             if (_actionProperties.TryGetValue(key, out var value))
             {
                 return (T)value;
             }
 
-            throw new InvalidOperationException($"No action property with key: {key}");
+            return default;
         }
 
         public void ClearActionProperties()

@@ -2,11 +2,10 @@
 {
     public class Workflow
     {
-        public Workflow(string workFlowName, List<Step> steps, List<Parameter>? inputParameters = null, List<Parameter>? outputParameters = null)
+        public Workflow(string workFlowName, List<Step> steps, List<Parameter>? outputParameters = null)
         {
             WorkflowName = workFlowName;
             Steps = steps;
-            InputParameters = inputParameters;
             OutputParameters = outputParameters;
         }
 
@@ -19,8 +18,6 @@
         /// Ordered list of steps to execute
         /// </summary>
         public List<Step> Steps { get; }
-
-        List<Parameter>? InputParameters { get; }
-        List<Parameter>? OutputParameters { get; }
+        public List<Parameter>? OutputParameters { get; }
     }
 }

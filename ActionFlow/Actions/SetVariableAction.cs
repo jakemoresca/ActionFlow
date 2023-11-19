@@ -10,7 +10,7 @@ namespace ActionFlow.Actions
     {
         public static string VariablesKey = "Variables";
 
-        public override void ExecuteAction()
+        public override Task ExecuteAction()
         {
             var variables = ExecutionContext!.GetActionProperty<Dictionary<string, string>>(VariablesKey);
 
@@ -24,6 +24,8 @@ namespace ActionFlow.Actions
 
                 ExecutionContext.AddOrUpdateParameter(parameter);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

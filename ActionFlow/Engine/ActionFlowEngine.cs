@@ -43,10 +43,17 @@ namespace ActionFlow.Engine
 
             foreach (var step in workflow.Steps)
             {
-                updatedExecutionContext = _stepExecutionEvaluator.EvaluateAndRunStep(step, updatedExecutionContext, _stepActionFactory);
+                updatedExecutionContext = await _stepExecutionEvaluator.EvaluateAndRunStep(step, updatedExecutionContext, _stepActionFactory);
             }
 
-            return await Task.FromResult(new ActionFlowEngineResult());
+            var result = new ActionFlowEngineResult();
+
+            if(workflow.OutputParameters != null)
+            {
+                result.OutputParameters = GetOutputParameters(workflow.OutputParameters, updatedExecutionContext);
+            }
+           
+            return await Task.FromResult(result);
         }
 
         private Workflow GetWorkflow(string name)
@@ -69,6 +76,18 @@ namespace ActionFlow.Engine
             }
 
             return executionContext;
+        }
+
+        private Dictionary<string, object> GetOutputParameters(List<Parameter> parameters, ExecutionContext executionContext)
+        {
+            var output = new Dictionary<string, object>();
+
+            foreach (var parameter in parameters)
+            {
+                output.Add(parameter.Name, executionContext.EvaluateExpression<object>(parameter.Expression!));
+            }
+
+            return output;
         }
     }
 }

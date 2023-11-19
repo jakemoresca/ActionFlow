@@ -5,7 +5,7 @@ namespace ActionFlow.Engine
 {
     public class StepExecutionEvaluator : IStepExecutionEvaluator
     {
-        public ExecutionContext EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory)
+        public async Task<ExecutionContext> EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory)
         {
             var shouldExecuteStep = executionContext.EvaluateExpression<bool>(step.ConditionExpression!);
 
@@ -14,7 +14,7 @@ namespace ActionFlow.Engine
                 var action = stepActionFactory.Get(step.ActionType);
                 var updatedExecutionContext = BuildActionProperties(step, executionContext);
                 action.SetExecutionContext(updatedExecutionContext);
-                action.ExecuteAction();
+                await action.ExecuteAction();
             }
 
             executionContext.ClearActionProperties();

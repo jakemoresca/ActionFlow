@@ -6,7 +6,7 @@ namespace ActionFlow.Actions
     {
         string ActionType { get; }
 
-        void ExecuteAction();
+        Task ExecuteAction();
         void SetExecutionContext(ExecutionContext executionContext);
     }
 }

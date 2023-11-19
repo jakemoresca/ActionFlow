@@ -5,6 +5,6 @@ namespace ActionFlow.Engine
 {
     public interface IStepExecutionEvaluator
     {
-        ExecutionContext EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory);
+        Task<ExecutionContext> EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory);
     }
 }

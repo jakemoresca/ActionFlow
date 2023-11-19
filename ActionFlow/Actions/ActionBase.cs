@@ -12,8 +12,9 @@ namespace ActionFlow.Actions
             ExecutionContext = executionContext;
         }
 
-        public virtual void ExecuteAction()
+        public virtual Task ExecuteAction()
         {
+            return Task.CompletedTask;
         }
     }
 }
