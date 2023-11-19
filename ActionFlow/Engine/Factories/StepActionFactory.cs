@@ -4,7 +4,7 @@ namespace ActionFlow.Engine.Factories
 {
     public class StepActionFactory : IStepActionFactory
     {
-        private Dictionary<string, Func<ActionBase>> _actionRegistry;
+        private readonly Dictionary<string, Func<ActionBase>> _actionRegistry;
 
         public StepActionFactory()
         {

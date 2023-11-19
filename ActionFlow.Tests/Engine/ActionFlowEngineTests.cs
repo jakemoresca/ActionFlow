@@ -15,7 +15,8 @@ namespace ActionFlow.Tests.Engine
         {
             //Arrange
             var workflowProvider = Substitute.For<IWorkflowProvider>();
-            workflowProvider.GetAllWorkflows().Returns(CreateFakeWorkflows());
+            var workflows = CreateFakeWorkflows();
+            workflowProvider.GetAllWorkflows().Returns(workflows);
 
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
@@ -31,7 +32,7 @@ namespace ActionFlow.Tests.Engine
             await rulesEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", inputs);
 
             //Assert
-            stepExecutionEvaluator.Received(1);
+            await stepExecutionEvaluator.ReceivedWithAnyArgs(2).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(), stepActionFactory);
         }
 
         [TestMethod]
@@ -56,13 +57,13 @@ namespace ActionFlow.Tests.Engine
             var output = await rulesEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", executionContext);
 
             //Assert
-            stepExecutionEvaluator.Received(1);
-            Assert.AreEqual(output.OutputParameters.Count, 2);
-            Assert.AreEqual(output.OutputParameters["canVote"], false);
-            Assert.AreEqual(output.OutputParameters["age"], 1);
+            await stepExecutionEvaluator.ReceivedWithAnyArgs(1).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(), stepActionFactory);
+            Assert.AreEqual(2 ,output.OutputParameters.Count);
+            Assert.AreEqual(false, output.OutputParameters["canVote"]);
+            Assert.AreEqual(1, output.OutputParameters["age"]);
         }
 
-        private List<Workflow> CreateFakeWorkflows()
+        private static List<Workflow> CreateFakeWorkflows()
         {
             List<Workflow> workflows = new List<Workflow>();
             var steps = new List<Step>
@@ -81,7 +82,7 @@ namespace ActionFlow.Tests.Engine
             return workflows;
         }
 
-        private List<Workflow> CreateFakeWorkflowsWithOutput()
+        private static List<Workflow> CreateFakeWorkflowsWithOutput()
         {
             List<Workflow> workflows = new List<Workflow>();
             var steps = new List<Step>

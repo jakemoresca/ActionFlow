@@ -4,7 +4,7 @@ namespace ActionFlow.Engine
 {
     public class ExecutionContext
     {
-        private Interpreter _intepreter;
+        private readonly Interpreter _intepreter;
 
         public ExecutionContext()
         {

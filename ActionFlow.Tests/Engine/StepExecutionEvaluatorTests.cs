@@ -12,7 +12,7 @@ namespace ActionFlow.Tests.Engine
     public class StepExecutionEvaluatorTests
     {
         [TestMethod]
-        public void When_evaluating_step_with_a_true_condition_it_should_execute_action()
+        public async Task When_evaluating_step_with_a_true_condition_it_should_execute_action()
         {
             //Arrange
             var step = new Step("test", "action", null, "age == 3");
@@ -31,15 +31,14 @@ namespace ActionFlow.Tests.Engine
             var sut = new StepExecutionEvaluator();
 
             //Act
-            var result = sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
+            await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Get("action").ReceivedCalls();
-            action.ReceivedWithAnyArgs(2);
+            stepActionFactory.Get("action").Received(1);
         }
 
         [TestMethod]
-        public void When_evaluating_step_with_a_false_condition_it_should_execute_action()
+        public async Task When_evaluating_step_with_a_false_condition_it_should_execute_action()
         {
             //Arrange
             var step = new Step("test", "action", null, "age == 3");
@@ -58,14 +57,14 @@ namespace ActionFlow.Tests.Engine
             var sut = new StepExecutionEvaluator();
 
             //Act
-            var result = sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
+            await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Received(0);
+            stepActionFactory.Get("action").Received(0);
         }
 
         [TestMethod]
-        public void When_evaluating_step_with_a_step_property_it_should_build_action_properties()
+        public async Task When_evaluating_step_with_a_step_property_it_should_build_action_properties()
         {
             //Arrange
             var actionProperties = new Dictionary<string, object>
@@ -90,11 +89,10 @@ namespace ActionFlow.Tests.Engine
             var sut = new StepExecutionEvaluator();
 
             //Act
-            var result = sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
+            await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Get("action").ReceivedCalls();
-            action.ReceivedWithAnyArgs(2);
+            stepActionFactory.Get("action").Received(1);
             executionContext.ReceivedWithAnyArgs(2);
         }
     }

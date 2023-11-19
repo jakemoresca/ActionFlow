@@ -12,11 +12,11 @@ namespace ActionFlow.Actions
 {
     public class SendHttpCallAction : ActionBase
     {
-        public static string UrlKey  = "Url";
-        public static string MethodKey = "Method";
-        public static string HeadersKey = "Headers";
-        public static string BodyKey = "Body";
-        public static string ResultVariableKey = "ResultVariable";
+        public readonly static string UrlKey  = "Url";
+        public readonly static string MethodKey = "Method";
+        public readonly static string HeadersKey = "Headers";
+        public readonly static string BodyKey = "Body";
+        public readonly static string ResultVariableKey = "ResultVariable";
         private readonly IApiClient _apiClient;
 
         public SendHttpCallAction(IApiClient apiClient)

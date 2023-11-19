@@ -8,13 +8,13 @@ namespace ActionFlow.Actions
 {
     public class SetVariableAction : ActionBase
     {
-        public static string VariablesKey = "Variables";
+        public readonly static string VariablesKey = "Variables";
 
         public override Task ExecuteAction()
         {
             var variables = ExecutionContext!.GetActionProperty<Dictionary<string, string>>(VariablesKey);
 
-            foreach (var variable in variables)
+            foreach (var variable in variables!)
             {
                 var parameter = new Parameter
                 {

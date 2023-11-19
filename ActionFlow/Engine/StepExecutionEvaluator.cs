@@ -22,7 +22,7 @@ namespace ActionFlow.Engine
             return executionContext;
         }
 
-        private ExecutionContext BuildActionProperties(Step step, ExecutionContext executionContext) 
+        private static ExecutionContext BuildActionProperties(Step step, ExecutionContext executionContext) 
         {
             foreach (var property in step.Properties!)
             {

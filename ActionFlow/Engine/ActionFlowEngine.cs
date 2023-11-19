@@ -66,7 +66,7 @@ namespace ActionFlow.Engine
             return _workflows[name];
         }
 
-        private ExecutionContext BuildExecutionContext(params Parameter[] inputs)
+        private static ExecutionContext BuildExecutionContext(params Parameter[] inputs)
         {
             var executionContext = new ExecutionContext();
 
@@ -78,7 +78,7 @@ namespace ActionFlow.Engine
             return executionContext;
         }
 
-        private Dictionary<string, object> GetOutputParameters(List<Parameter> parameters, ExecutionContext executionContext)
+        private static Dictionary<string, object> GetOutputParameters(List<Parameter> parameters, ExecutionContext executionContext)
         {
             var output = new Dictionary<string, object>();
 

@@ -35,7 +35,7 @@ namespace ActionFlow.Helpers
             return await CreateApiCallResult(result);
         }
 
-        private void AddRequestHeaders(Dictionary<string, string>? requestHeaders, HttpClient httpClient)
+        private static void AddRequestHeaders(Dictionary<string, string>? requestHeaders, HttpClient httpClient)
         {
             if (requestHeaders != null)
             {
@@ -46,7 +46,7 @@ namespace ActionFlow.Helpers
             }
         }
 
-        private async Task<ApiCallResult> CreateApiCallResult(HttpResponseMessage result)
+        private static async Task<ApiCallResult> CreateApiCallResult(HttpResponseMessage result)
         {
             var jsonBody = JsonNode.Parse(await result.Content.ReadAsStringAsync());
             var headers = result.Headers.ToDictionary(x => x.Key, x => x.Value);

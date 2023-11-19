@@ -6,9 +6,9 @@ namespace ActionFlow.Actions
 {
     public class CallWorkflowAction : ActionBase
     {
-        public static string WorkflowNameKey = "WorkflowName";
-        public static string ParametersKey = "Parameters";
-        public static string ResultVariableKey = "ResultVariable";
+        public readonly static string WorkflowNameKey = "WorkflowName";
+        public readonly static string ParametersKey = "Parameters";
+        public readonly static string ResultVariableKey = "ResultVariable";
 
         private readonly IActionFlowEngine _actionFlowEngine;
 
