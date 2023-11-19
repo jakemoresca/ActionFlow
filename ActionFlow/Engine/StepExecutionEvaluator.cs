@@ -7,7 +7,7 @@ namespace ActionFlow.Engine
     {
         public async Task<ExecutionContext> EvaluateAndRunStep(Step step, ExecutionContext executionContext, IStepActionFactory stepActionFactory)
         {
-            var shouldExecuteStep = executionContext.EvaluateExpression<bool>(step.ConditionExpression!);
+            var shouldExecuteStep = step.ConditionExpression == null || executionContext.EvaluateExpression<bool>(step.ConditionExpression!);
 
             if (shouldExecuteStep)
             {
