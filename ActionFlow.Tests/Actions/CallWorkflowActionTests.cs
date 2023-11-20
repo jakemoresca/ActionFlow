@@ -46,7 +46,7 @@ namespace ActionFlow.Tests.Actions
             Assert.AreEqual(true, output["canVote"]);
         }
 
-        private List<Workflow> CreateFakeWorkflowsWithOutput()
+        private static List<Workflow> CreateFakeWorkflowsWithOutput()
         {
             List<Workflow> workflows = new List<Workflow>();
 

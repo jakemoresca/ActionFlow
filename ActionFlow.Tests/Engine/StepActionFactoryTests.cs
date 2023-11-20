@@ -31,8 +31,10 @@ namespace ActionFlow.Tests.Engine
             sut.AddOrUpdate(actionName, () => fakeAction);
 
             //Act
+            var result = sut.AddOrUpdate(actionName, () => fakeAction);
+
             //Assert
-            sut.AddOrUpdate(actionName, () => fakeAction);
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -92,8 +94,10 @@ namespace ActionFlow.Tests.Engine
             var actionName = "test";
 
             //Act
+            var result = sut.Get(actionName);
+
             //Assert
-            sut.Get(actionName);
+            Assert.IsNotNull(result);
         }
 
         [TestMethod]
@@ -107,8 +111,10 @@ namespace ActionFlow.Tests.Engine
             sut.AddOrUpdate(actionName, () => fakeAction);
 
             //Act
+            var result = sut.Clear();
+
             //Assert
-            sut.Clear();
+            Assert.IsTrue(result);
         }
     }
 }

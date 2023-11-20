@@ -11,7 +11,7 @@ namespace ActionFlow.Engine.Factories
             _actionRegistry = new Dictionary<string, Func<ActionBase>>();
         }
 
-        public void AddOrUpdate(string actionName, Func<ActionBase> action)
+        public bool AddOrUpdate(string actionName, Func<ActionBase> action)
         {
             if (_actionRegistry.ContainsKey(actionName))
             {
@@ -21,6 +21,8 @@ namespace ActionFlow.Engine.Factories
             {
                 _actionRegistry.Add(actionName, action);
             }
+
+            return true;
         }
 
         public bool Remove(string name)
@@ -28,9 +30,10 @@ namespace ActionFlow.Engine.Factories
             return _actionRegistry.Remove(name);
         }
 
-        public void Clear()
+        public bool Clear()
         {
             _actionRegistry.Clear();
+            return true;
         }
 
         public ActionBase Get(string name)

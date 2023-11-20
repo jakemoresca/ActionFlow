@@ -57,7 +57,7 @@ namespace ActionFlow.Tests.Actions
             Assert.AreEqual(true, executionContext.EvaluateExpression<bool>("canWalk"));
         }
 
-        private List<ScopedWorkflow> CreateScopedWorkflows()
+        private static List<ScopedWorkflow> CreateScopedWorkflows()
         {
             var conditions = new List<ScopedWorkflow>
             {
@@ -98,7 +98,7 @@ namespace ActionFlow.Tests.Actions
             return conditions;
         }
 
-        private List<ScopedWorkflow> CreateScopedWorkflowsThatAllWillBeCalled()
+        private static List<ScopedWorkflow> CreateScopedWorkflowsThatAllWillBeCalled()
         {
             var conditions = new List<ScopedWorkflow>
             {

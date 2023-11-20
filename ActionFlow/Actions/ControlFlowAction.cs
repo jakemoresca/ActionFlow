@@ -39,7 +39,7 @@ namespace ActionFlow.Actions
             }
         }
 
-        private Workflow CreateScopedWorkflow(List<Step> steps)
+        private static Workflow CreateScopedWorkflow(List<Step> steps)
         {
             var name = $"[ScopedWorkflow]_{Guid.NewGuid()}";
             return new Workflow(name, steps);

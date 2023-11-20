@@ -34,7 +34,7 @@ namespace ActionFlow.Tests.Engine
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Get("action").Received(1);
+            stepActionFactory.Received(1).Get("action");
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace ActionFlow.Tests.Engine
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Get("action").Received(0);
+            stepActionFactory.Received(0).Get("action");
         }
 
         [TestMethod]
@@ -92,8 +92,8 @@ namespace ActionFlow.Tests.Engine
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
 
             //Assert
-            stepActionFactory.Get("action").Received(1);
-            executionContext.ReceivedWithAnyArgs(2);
+            stepActionFactory.Received(1).Get("action");
+            executionContext.Received(1).ClearActionProperties();
         }
     }
 }
