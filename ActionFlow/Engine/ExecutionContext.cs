@@ -16,7 +16,7 @@ namespace ActionFlow.Engine
 
         public void AddOrUpdateParameter(Domain.Engine.Parameter parameter)
         {
-            AddOrUpdateParameter(parameter.Name, _intepreter.Eval(parameter.Expression));
+            AddOrUpdateParameter(parameter.Name!, _intepreter.Eval(parameter.Expression));
         }
 
         public void AddOrUpdateParameter(string name, object value)

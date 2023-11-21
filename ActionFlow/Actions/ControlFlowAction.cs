@@ -26,10 +26,10 @@ namespace ActionFlow.Actions
             {
                 foreach (var scopedWorkflow in scopedWorkflows)
                 {
-                    if (!ExecutionContext.EvaluateExpression<bool>(scopedWorkflow.Expression))
+                    if (!ExecutionContext.EvaluateExpression<bool>(scopedWorkflow.Expression!))
                         continue;
 
-                    var workflow = CreateScopedWorkflow(scopedWorkflow.Steps);
+                    var workflow = CreateScopedWorkflow(scopedWorkflow.Steps!);
 
                     foreach (var step in workflow.Steps)
                     {

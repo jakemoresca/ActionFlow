@@ -84,7 +84,7 @@ namespace ActionFlow.Engine
 
             foreach (var parameter in parameters)
             {
-                output.Add(parameter.Name, executionContext.EvaluateExpression<object>(parameter.Expression!));
+                output.Add(parameter.Name!, executionContext.EvaluateExpression<object>(parameter.Expression!));
             }
 
             return output;

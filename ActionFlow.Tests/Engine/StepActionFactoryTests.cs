@@ -16,8 +16,10 @@ namespace ActionFlow.Tests.Engine
             var fakeAction = Substitute.For<ActionBase>();
 
             //Act
+            var result = sut.AddOrUpdate(actionName, () => fakeAction);
+
             //Assert
-            sut.AddOrUpdate(actionName, () => fakeAction);
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
