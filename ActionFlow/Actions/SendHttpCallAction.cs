@@ -19,6 +19,8 @@ namespace ActionFlow.Actions
         public readonly static string ResultVariableKey = "ResultVariable";
         private readonly IApiClient _apiClient;
 
+        public override string ActionType { get; } = "SendHttpCall";
+
         public SendHttpCallAction(IApiClient apiClient)
         {
             _apiClient = apiClient;

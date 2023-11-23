@@ -8,18 +8,17 @@ using NSubstitute;
 namespace ActionFlow.Tests.Actions
 {
     [TestClass]
-    public class ControlFlowActionTests
+    public class ControlFlowActionTests : ActionBaseTests
     {
         [TestMethod]
         public async Task When_executing_it_should_call_only_valid_scoped_workflow_steps()
         {
             //Arrange
-            var stepActionFactory = Substitute.For<IStepActionFactory>();
-            stepActionFactory.Get("Variable").Returns(new SetVariableAction());
+            var sut = new ControlFlowAction();
             var stepExecutionEvaluator = new StepExecutionEvaluator();
-            var sut = new ControlFlowAction(stepExecutionEvaluator, stepActionFactory);
+            ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
+            var executionContext = ExecutionContext;
 
-            var executionContext = new ActionFlow.Engine.ExecutionContext();
             var conditions = CreateScopedWorkflows();
             executionContext.AddOrUpdateParameter("age", 18);
             executionContext.AddOrUpdateActionProperty(ControlFlowAction.ConditionsKey, conditions);
@@ -37,12 +36,11 @@ namespace ActionFlow.Tests.Actions
         public async Task When_executing_it_should_call_all_scoped_workflow_steps()
         {
             //Arrange
-            var stepActionFactory = Substitute.For<IStepActionFactory>();
-            stepActionFactory.Get("Variable").Returns(new SetVariableAction());
+            var sut = new ControlFlowAction();
             var stepExecutionEvaluator = new StepExecutionEvaluator();
-            var sut = new ControlFlowAction(stepExecutionEvaluator, stepActionFactory);
+            ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
+            var executionContext = ExecutionContext;
 
-            var executionContext = new ActionFlow.Engine.ExecutionContext();
             var conditions = CreateScopedWorkflowsThatAllWillBeCalled();
             executionContext.AddOrUpdateParameter("age", 1);
             executionContext.AddOrUpdateActionProperty(ControlFlowAction.ConditionsKey, conditions);

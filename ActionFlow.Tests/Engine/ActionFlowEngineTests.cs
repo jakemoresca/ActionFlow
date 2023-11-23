@@ -21,7 +21,7 @@ namespace ActionFlow.Tests.Engine
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
 
-            var rulesEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
+            var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
             var inputs = new Parameter[]
             {
@@ -29,10 +29,10 @@ namespace ActionFlow.Tests.Engine
             };
 
             //Act
-            await rulesEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", inputs);
+            await actionFlowEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", inputs);
 
             //Assert
-            await stepExecutionEvaluator.ReceivedWithAnyArgs(2).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(), stepActionFactory);
+            await stepExecutionEvaluator.ReceivedWithAnyArgs(2).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(actionFlowEngine), stepActionFactory);
         }
 
         [TestMethod]
@@ -45,19 +45,19 @@ namespace ActionFlow.Tests.Engine
 
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
+            var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
-            var executionContext = new ExecutionContext();
+            var executionContext = new ExecutionContext(actionFlowEngine);
             executionContext.AddOrUpdateParameter(new Parameter { Name = "age", Expression = "1" });
             executionContext.AddOrUpdateParameter(new Parameter { Name = "canWalk", Expression = "true" });
 
             stepExecutionEvaluator.EvaluateAndRunStep(workflows[0].Steps[0], executionContext, stepActionFactory).ReturnsForAnyArgs(executionContext);
-            var rulesEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
             //Act
-            var output = await rulesEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", executionContext);
+            var output = await actionFlowEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", executionContext);
 
             //Assert
-            await stepExecutionEvaluator.ReceivedWithAnyArgs(1).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(), stepActionFactory);
+            await stepExecutionEvaluator.ReceivedWithAnyArgs(1).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(actionFlowEngine), stepActionFactory);
             Assert.AreEqual(2 ,output.OutputParameters.Count);
             Assert.AreEqual(false, output.OutputParameters["canVote"]);
             Assert.AreEqual(1, output.OutputParameters["age"]);

@@ -9,18 +9,12 @@ namespace ActionFlow.Actions
     {
         public readonly static string ConditionsKey = "Conditions";
 
-        private readonly IStepExecutionEvaluator _stepExecutionEvaluator;
-        private readonly IStepActionFactory _stepActionFactory;
-
-        public ControlFlowAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory)
-        {
-            _stepExecutionEvaluator = stepExecutionEvaluator;
-            _stepActionFactory = stepActionFactory;
-        }
+        public override string ActionType { get; } = "ControlFlow";
 
         public override async Task ExecuteAction()
         {
             var scopedWorkflows = ExecutionContext!.GetActionProperty<List<ScopedWorkflow>>(ConditionsKey);
+            var currentEngine = ExecutionContext.GetCurrentEngine();
 
             if (scopedWorkflows != null)
             {
@@ -33,7 +27,7 @@ namespace ActionFlow.Actions
 
                     foreach (var step in workflow.Steps)
                     {
-                        ExecutionContext = await _stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, _stepActionFactory);
+                        ExecutionContext = await currentEngine.GetStepExecutionEvaluator().EvaluateAndRunStep(step, ExecutionContext, currentEngine.GetActionFactory());
                     }
                 }
             }

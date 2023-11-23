@@ -13,14 +13,7 @@ namespace ActionFlow.Actions
         public readonly static string IteratorKey = "Iterator";
         public readonly static string StepsKey = "Steps";
 
-        private readonly IStepExecutionEvaluator _stepExecutionEvaluator;
-        private readonly IStepActionFactory _stepActionFactory;
-
-        public ForLoopAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory)
-        {
-            _stepExecutionEvaluator = stepExecutionEvaluator;
-            _stepActionFactory = stepActionFactory;
-        }
+        public override string ActionType { get; } = "ForLoop";
 
         public override async Task ExecuteAction()
         {
@@ -29,6 +22,8 @@ namespace ActionFlow.Actions
             var loopCondition = ExecutionContext!.GetActionProperty<string>(LoopConditionKey);
             var iterator = ExecutionContext!.GetActionProperty<string>(IteratorKey);
             var steps = ExecutionContext!.GetActionProperty<List<Step>>(StepsKey);
+
+            var currentEngine = ExecutionContext.GetCurrentEngine();
 
             if (initializerVariable != null && initialValue != null && loopCondition != null && iterator != null && steps != null)
             {
@@ -39,7 +34,7 @@ namespace ActionFlow.Actions
                 {
                     foreach (var step in steps)
                     {
-                        ExecutionContext = await _stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, _stepActionFactory);
+                        ExecutionContext = await currentEngine.GetStepExecutionEvaluator().EvaluateAndRunStep(step, ExecutionContext, currentEngine.GetActionFactory());
                     }
                 }
             }

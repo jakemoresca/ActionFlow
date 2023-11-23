@@ -5,14 +5,18 @@ namespace ActionFlow.Engine
     public class ExecutionContext
     {
         private readonly Interpreter _intepreter;
+        private readonly IActionFlowEngine _actionFlowEngine;
 
-        public ExecutionContext()
+        public ExecutionContext(IActionFlowEngine actionFlowEngine)
         {
             _actionProperties = new Dictionary<string, object>();
             _intepreter = new Interpreter();
+            _actionFlowEngine = actionFlowEngine;
         }
 
         private Dictionary<string, object> _actionProperties { get; }
+
+        public IActionFlowEngine GetCurrentEngine() => _actionFlowEngine;
 
         public void AddOrUpdateParameter(Domain.Engine.Parameter parameter)
         {

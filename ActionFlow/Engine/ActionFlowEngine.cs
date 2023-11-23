@@ -18,6 +18,9 @@ namespace ActionFlow.Engine
             _stepExecutionEvaluator = stepExecutionEvaluator;
         }
 
+        public IStepActionFactory GetActionFactory() => _stepActionFactory;
+        public IStepExecutionEvaluator GetStepExecutionEvaluator() => _stepExecutionEvaluator;
+
         /// <summary>
         /// This will execute all the rules of the specified workflow
         /// </summary>
@@ -66,9 +69,9 @@ namespace ActionFlow.Engine
             return _workflows[name];
         }
 
-        private static ExecutionContext BuildExecutionContext(params Parameter[] inputs)
+        private ExecutionContext BuildExecutionContext(params Parameter[] inputs)
         {
-            var executionContext = new ExecutionContext();
+            var executionContext = new ExecutionContext(this);
 
             foreach (var input in inputs)
             {

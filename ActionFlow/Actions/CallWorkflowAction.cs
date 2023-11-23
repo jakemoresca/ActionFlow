@@ -10,12 +10,7 @@ namespace ActionFlow.Actions
         public readonly static string ParametersKey = "Parameters";
         public readonly static string ResultVariableKey = "ResultVariable";
 
-        private readonly IActionFlowEngine _actionFlowEngine;
-
-        public CallWorkflowAction(IActionFlowEngine actionFlowEngine)
-        {
-            _actionFlowEngine = actionFlowEngine;
-        }
+        public override string ActionType { get; } = "CallWorkFlow";
 
         public override async Task ExecuteAction()
         {
@@ -23,7 +18,8 @@ namespace ActionFlow.Actions
             var parameters = ExecutionContext!.GetActionProperty<Dictionary<string, string>>(ParametersKey);
             var resultVariable = ExecutionContext.GetActionProperty<string>(ResultVariableKey);
 
-            var executionContext = new ExecutionContext();
+            var currentEngine = ExecutionContext.GetCurrentEngine();
+            var executionContext = new ExecutionContext(currentEngine);
 
             if(parameters != null)
             {
@@ -33,7 +29,7 @@ namespace ActionFlow.Actions
                 }
             }
 
-            var engineResult = await _actionFlowEngine.ExecuteWorkflowAsync(workflowName!, executionContext);
+            var engineResult = await currentEngine.ExecuteWorkflowAsync(workflowName!, executionContext);
 
             if (resultVariable != null)
             {

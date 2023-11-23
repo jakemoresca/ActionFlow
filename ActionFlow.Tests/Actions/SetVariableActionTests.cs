@@ -3,14 +3,14 @@
 namespace ActionFlow.Tests.Actions
 {
     [TestClass]
-    public class SetVariableActionTests
+    public class SetVariableActionTests : ActionBaseTests
     {
         [TestMethod]
         public async Task When_executing_it_should_set_new_variable()
         {
             //Arrange
             var sut = new SetVariableAction();
-            var executionContext = new ActionFlow.Engine.ExecutionContext();
+            var executionContext = ExecutionContext;
             var variables = new Dictionary<string, string>
             {
                 { "age", "18" },

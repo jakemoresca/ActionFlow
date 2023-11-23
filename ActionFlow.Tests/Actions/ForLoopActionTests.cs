@@ -13,18 +13,18 @@ using ActionFlow.Domain.Engine;
 namespace ActionFlow.Tests.Actions
 {
     [TestClass]
-    public class ForLoopActionTests
+    public class ForLoopActionTests : ActionBaseTests
     {
         [TestMethod]
         public async Task When_executing_it_should_repeat_steps_3_times()
         {
             //Arrange
-            var stepActionFactory = Substitute.For<IStepActionFactory>();
-            stepActionFactory.Get("Variable").Returns(new SetVariableAction());
             var stepExecutionEvaluator = new StepExecutionEvaluator();
-            var sut = new ForLoopAction(stepExecutionEvaluator, stepActionFactory);
+            ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
 
-            var executionContext = new ActionFlow.Engine.ExecutionContext();
+            var sut = new ForLoopAction();
+            var executionContext = ExecutionContext;
+
             var steps = CreateLoopSteps();
             executionContext.AddOrUpdateParameter("age", 18);
             executionContext.AddOrUpdateActionProperty(ForLoopAction.InitializerVariableKey, "index");
