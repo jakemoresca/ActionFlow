@@ -9,7 +9,7 @@ namespace ActionFlow.Engine
         private readonly IWorkflowProvider _workflowProvider;
         private readonly IStepActionFactory _stepActionFactory;
         private readonly IStepExecutionEvaluator _stepExecutionEvaluator;
-        private Dictionary<string, Workflow> _workflows = new Dictionary<string, Workflow>();
+        private Dictionary<string, Workflow> _workflows = new();
 
         public ActionFlowEngine(IWorkflowProvider workflowProvider, IStepActionFactory stepActionFactory, IStepExecutionEvaluator stepExecutionEvaluator)
         {

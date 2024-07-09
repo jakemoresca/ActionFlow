@@ -2,8 +2,9 @@
 
 namespace ActionFlow.Engine.Providers
 {
-    public interface IWorkflowProvider
-    {
-        List<Workflow> GetAllWorkflows();
-    }
+	public interface IWorkflowProvider
+	{
+		List<Workflow> GetAllWorkflows();
+		void AddWorkflow(Workflow workflow);
+	}
 }

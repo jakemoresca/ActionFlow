@@ -25,7 +25,7 @@ namespace ActionFlow.Tests.Engine
 
             var inputs = new Parameter[]
             {
-                new Parameter { Name = "test", Expression = "true"}
+                new() { Name = "test", Expression = "true"}
             };
 
             //Act
@@ -68,12 +68,12 @@ namespace ActionFlow.Tests.Engine
             List<Workflow> workflows = new List<Workflow>();
             var steps = new List<Step>
             {
-                new Step("initialize", "Variable", new Dictionary<string, object>
+                new("initialize", "Variable", new Dictionary<string, object>
                 {
                     { "age", "1" },
                     { "canWalk", "true" },
                 }),
-                new Step("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+                new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
             };
 
             Workflow workflow = new Workflow("Test Workflow Rule 1", steps);
@@ -87,13 +87,13 @@ namespace ActionFlow.Tests.Engine
             List<Workflow> workflows = new List<Workflow>();
             var steps = new List<Step>
             {
-                new Step("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+                new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
             };
 
             Workflow workflow = new Workflow("Test Workflow Rule 1", steps, new List<Parameter>
             {
-                new Parameter{ Name = "canVote", Expression = "age >= 18 && canWalk == true"},
-                new Parameter{ Name = "age", Expression = "age"}
+                new() { Name = "canVote", Expression = "age >= 18 && canWalk == true"},
+                new() { Name = "age", Expression = "age"}
             });
             workflows.Add(workflow);
 

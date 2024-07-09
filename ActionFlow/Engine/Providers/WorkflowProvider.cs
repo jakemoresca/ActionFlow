@@ -2,29 +2,36 @@
 
 namespace ActionFlow.Engine.Providers
 {
-    public class WorkflowProvider : IWorkflowProvider
-    {
-        public List<Workflow> GetAllWorkflows()
-        {
-            List<Workflow> workflows = new List<Workflow>();
+	public class WorkflowProvider : IWorkflowProvider
+	{
+		protected List<Workflow> _workflows = new();
 
-            //Test
-            //Todo: Load from DB, Json, or other source
-            var steps = new List<Step>
-            {
-                new Step("initialize", "Variable", new Dictionary<string, object>
-                {
-                    { "age", "1" },
-                    { "canWalk", "true" },
-                }),
-                new Step("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
-            };
+		public void AddWorkflow(Workflow workflow)
+		{
+			_workflows.Add(workflow);
+		}
 
-            Workflow workflow = new Workflow("Test Workflow Rule 1", steps);
-            workflows.Add(workflow);
-            //Test End
+		public List<Workflow> GetAllWorkflows()
+		{
+			List<Workflow> workflows = new List<Workflow>();
 
-            return workflows;
-        }
-    }
+			//Test
+			//Todo: Load from DB, Json, or other source
+			var steps = new List<Step>
+			{
+				new("initialize", "Variable", new Dictionary<string, object>
+				{
+					{ "age", "1" },
+					{ "canWalk", "true" },
+				}),
+				new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+			};
+
+			Workflow workflow = new Workflow("Test Workflow Rule 1", steps);
+			workflows.Add(workflow);
+			//Test End
+
+			return workflows;
+		}
+	}
 }

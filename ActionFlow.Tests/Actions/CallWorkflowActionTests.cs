@@ -54,7 +54,7 @@ namespace ActionFlow.Tests.Actions
 
             var steps2 = new List<Step>
             {
-                new Step("test variable value", "Variable", new Dictionary<string, object>
+                new("test variable value", "Variable", new Dictionary<string, object>
                 {
                     { 
                         SetVariableAction.VariablesKey, new Dictionary<string, string>
@@ -67,7 +67,7 @@ namespace ActionFlow.Tests.Actions
 
             Workflow workflow2 = new Workflow(targetWorkflowName, steps2, new List<Parameter>
             {
-                new Parameter{ Name = "canVote", Expression = "canVote"}
+                new() { Name = "canVote", Expression = "canVote"}
             });
             workflows.Add(workflow2);
 
