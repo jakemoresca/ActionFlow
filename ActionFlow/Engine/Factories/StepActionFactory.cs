@@ -11,13 +11,9 @@ namespace ActionFlow.Engine.Factories
 
 		public bool AddOrUpdate(string actionName, Func<IActionBase> action)
 		{
-			if (_actionRegistry.ContainsKey(actionName))
+			if (!_actionRegistry.TryAdd(actionName, action))
 			{
 				_actionRegistry[actionName] = action;
-			}
-			else
-			{
-				_actionRegistry.Add(actionName, action);
 			}
 
 			return true;
@@ -36,9 +32,9 @@ namespace ActionFlow.Engine.Factories
 
 		public IActionBase Get(string name)
 		{
-			if (_actionRegistry.ContainsKey(name))
+			if (_actionRegistry.TryGetValue(name, out var value))
 			{
-				return _actionRegistry[name]();
+				return value();
 			}
 			throw new KeyNotFoundException($"Action with name: {name} does not exist");
 		}

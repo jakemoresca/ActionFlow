@@ -20,9 +20,8 @@ namespace ActionFlow.Tests.Engine
 
 			var stepActionFactory = Substitute.For<IStepActionFactory>();
 			var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
-			var helperProvider = Substitute.For<IHelperProvider>();
 
-			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator, helperProvider);
+			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
 			var inputs = new Parameter[]
 			{
@@ -46,8 +45,7 @@ namespace ActionFlow.Tests.Engine
 
 			var stepActionFactory = Substitute.For<IStepActionFactory>();
 			var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
-			var helperProvider = Substitute.For<IHelperProvider>();
-			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator, helperProvider);
+			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
 			var executionContext = new ExecutionContext(actionFlowEngine);
 			executionContext.AddOrUpdateParameter(new Parameter { Name = "age", Expression = "1" });
@@ -61,7 +59,7 @@ namespace ActionFlow.Tests.Engine
 			//Assert
 			await stepExecutionEvaluator.ReceivedWithAnyArgs(1).EvaluateAndRunStep(workflows[0].Steps[0], new ExecutionContext(actionFlowEngine), stepActionFactory);
 			Assert.AreEqual(2, output.OutputParameters.Count);
-			Assert.AreEqual(false, output.OutputParameters["canVote"]);
+			Assert.IsFalse((bool)output.OutputParameters["canVote"]);
 			Assert.AreEqual(1, output.OutputParameters["age"]);
 		}
 

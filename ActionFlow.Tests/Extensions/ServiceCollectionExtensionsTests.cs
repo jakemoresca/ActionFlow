@@ -26,9 +26,15 @@ namespace ActionFlow.Tests.Extensions
 			Assert.IsNotNull(provider.GetRequiredService<IWorkflowProvider>());
 			Assert.IsNotNull(provider.GetRequiredService<IStepExecutionEvaluator>());
 			Assert.IsNotNull(provider.GetRequiredService<IStepActionFactory>());
-			Assert.IsNotNull(provider.GetRequiredService<IHelperProvider>());
 			Assert.IsNotNull(provider.GetRequiredService<IApiClient>());
 			Assert.IsNotNull(provider.GetRequiredService<IEnumerable<IActionBase>>());
+
+			var stepActionFactory = provider.GetRequiredService<IStepActionFactory>();
+			Assert.AreEqual("CallWorkFlow", stepActionFactory.Get("CallWorkFlow").ActionType);
+			Assert.AreEqual("ControlFlow", stepActionFactory.Get("ControlFlow").ActionType);
+			Assert.AreEqual("ForLoop", stepActionFactory.Get("ForLoop").ActionType);
+			Assert.AreEqual("SendHttpCall", stepActionFactory.Get("SendHttpCall").ActionType);
+			Assert.AreEqual("SetVariable", stepActionFactory.Get("SetVariable").ActionType);
 		}
 	}
 }

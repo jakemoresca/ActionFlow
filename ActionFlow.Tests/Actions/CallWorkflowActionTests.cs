@@ -22,9 +22,8 @@ namespace ActionFlow.Tests.Actions
 			stepActionFactory.Get("Variable").Returns(new SetVariableAction());
 
 			var stepExecutionEvaluator = new StepExecutionEvaluator();
-			var helperProvider = Substitute.For<IHelperProvider>();
 
-			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator, helperProvider);
+			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
 			var sut = new CallWorkflowAction();
 			var executionContext = new ActionFlow.Engine.ExecutionContext(actionFlowEngine);

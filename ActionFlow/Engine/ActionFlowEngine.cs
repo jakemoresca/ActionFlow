@@ -4,7 +4,7 @@ using ActionFlow.Engine.Providers;
 
 namespace ActionFlow.Engine
 {
-	public class ActionFlowEngine(IWorkflowProvider workflowProvider, IStepActionFactory stepActionFactory, IStepExecutionEvaluator stepExecutionEvaluator, IHelperProvider helperProvider) : IActionFlowEngine
+	public class ActionFlowEngine(IWorkflowProvider workflowProvider, IStepActionFactory stepActionFactory, IStepExecutionEvaluator stepExecutionEvaluator) : IActionFlowEngine
 	{
 		private Dictionary<string, Workflow> _workflows = [];
 
