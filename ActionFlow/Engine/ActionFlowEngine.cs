@@ -1,5 +1,4 @@
-﻿using ActionFlow.Actions;
-using ActionFlow.Domain.Engine;
+﻿using ActionFlow.Domain.Engine;
 using ActionFlow.Engine.Factories;
 using ActionFlow.Engine.Providers;
 
@@ -8,6 +7,9 @@ namespace ActionFlow.Engine
 	public class ActionFlowEngine(IWorkflowProvider workflowProvider, IStepActionFactory stepActionFactory, IStepExecutionEvaluator stepExecutionEvaluator, IHelperProvider helperProvider) : IActionFlowEngine
 	{
 		private Dictionary<string, Workflow> _workflows = [];
+
+		public IStepActionFactory GetActionFactory() => stepActionFactory;
+		public IStepExecutionEvaluator GetStepExecutionEvaluator() => stepExecutionEvaluator;
 
 		/// <summary>
 		/// This will execute all the rules of the specified workflow
@@ -57,19 +59,9 @@ namespace ActionFlow.Engine
 			return _workflows[name];
 		}
 
-		private Dictionary<string, Func<ActionBase>> GetDefaultActions()
+		private ExecutionContext BuildExecutionContext(params Parameter[] inputs)
 		{
-
-			return new Dictionary<string, Func<ActionBase>>
-			{
-				{ "Variable", () => new SetVariableAction() },
-				{ "SendHttp", () => new SendHttpCallAction(helperProvider.GetApiClient()) }
-			};
-		}
-
-		private static ExecutionContext BuildExecutionContext(params Parameter[] inputs)
-		{
-			var executionContext = new ExecutionContext();
+			var executionContext = new ExecutionContext(this);
 
 			foreach (var input in inputs)
 			{

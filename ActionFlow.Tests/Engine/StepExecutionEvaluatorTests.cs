@@ -15,8 +15,9 @@ namespace ActionFlow.Tests.Engine
         public async Task When_evaluating_step_with_a_true_condition_it_should_execute_action()
         {
             //Arrange
+            var actionFlowEngine = Substitute.For<IActionFlowEngine>();
             var step = new Step("test", "action", null, "age == 3");
-            var executionContext = new ExecutionContext();
+            var executionContext = new ExecutionContext(actionFlowEngine);
             var ageParameter = new Parameter
             {
                 Name = "age",
@@ -41,8 +42,9 @@ namespace ActionFlow.Tests.Engine
         public async Task When_evaluating_step_with_a_false_condition_it_should_execute_action()
         {
             //Arrange
+            var actionFlowEngine = Substitute.For<IActionFlowEngine>();
             var step = new Step("test", "action", null, "age == 3");
-            var executionContext = new ExecutionContext();
+            var executionContext = new ExecutionContext(actionFlowEngine);
             var ageParameter = new Parameter
             {
                 Name = "age",
@@ -67,6 +69,7 @@ namespace ActionFlow.Tests.Engine
         public async Task When_evaluating_step_with_a_step_property_it_should_build_action_properties()
         {
             //Arrange
+            var actionFlowEngine = Substitute.For<IActionFlowEngine>();
             var actionProperties = new Dictionary<string, object>
             {
                 { "test", true },
@@ -74,7 +77,7 @@ namespace ActionFlow.Tests.Engine
                 { "testB", 1 },
             };
             var step = new Step("test", "action", actionProperties, "age == 3");
-            var executionContext = Substitute.For<ExecutionContext>();
+            var executionContext = new ExecutionContext(actionFlowEngine);
             var ageParameter = new Parameter
             {
                 Name = "age",
@@ -93,7 +96,6 @@ namespace ActionFlow.Tests.Engine
 
             //Assert
             stepActionFactory.Received(1).Get("action");
-            executionContext.Received(1).ClearActionProperties();
         }
     }
 }

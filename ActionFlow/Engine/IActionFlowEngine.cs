@@ -1,4 +1,5 @@
 ﻿using ActionFlow.Domain.Engine;
+using ActionFlow.Engine.Factories;
 using ExecutionContext = ActionFlow.Engine.ExecutionContext;
 
 namespace ActionFlow.Engine
@@ -7,5 +8,7 @@ namespace ActionFlow.Engine
     {
         ValueTask<ActionFlowEngineResult> ExecuteWorkflowAsync(string workflowName, params Parameter[] inputs);
         ValueTask<ActionFlowEngineResult> ExecuteWorkflowAsync(string workflowName, ExecutionContext executionContext);
+        IStepActionFactory GetActionFactory();
+        IStepExecutionEvaluator GetStepExecutionEvaluator();
     }
 }

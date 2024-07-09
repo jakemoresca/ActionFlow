@@ -26,8 +26,8 @@ namespace ActionFlow.Tests.Actions
 
 			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator, helperProvider);
 
-			var sut = new CallWorkflowAction(actionFlowEngine);
-			var executionContext = new ActionFlow.Engine.ExecutionContext();
+			var sut = new CallWorkflowAction();
+			var executionContext = new ActionFlow.Engine.ExecutionContext(actionFlowEngine);
 			var parameters = new Dictionary<string, string>
 			{
 				{ "age", "18" }

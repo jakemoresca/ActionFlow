@@ -4,9 +4,9 @@ namespace ActionFlow.Engine.Factories
 {
     public interface IStepActionFactory
     {
-        bool AddOrUpdate(string actionName, Func<ActionBase> action);
+        bool AddOrUpdate(string actionName, Func<IActionBase> action);
         bool Clear();
-        ActionBase Get(string name);
+        IActionBase Get(string name);
         bool Remove(string name);
     }
 }

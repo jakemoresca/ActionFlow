@@ -11,7 +11,8 @@ namespace ActionFlow.Tests.Engine
         public void When_adding_an_action_it_should_not_fail()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
             var fakeAction = Substitute.For<ActionBase>();
 
@@ -26,7 +27,8 @@ namespace ActionFlow.Tests.Engine
         public void When_adding_an_existing_action_it_should_not_fail()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
             var fakeAction = Substitute.For<ActionBase>();
 
@@ -43,7 +45,8 @@ namespace ActionFlow.Tests.Engine
         public void When_removing_an_existing_action_it_should_return_true()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
             var fakeAction = Substitute.For<ActionBase>();
 
@@ -60,7 +63,8 @@ namespace ActionFlow.Tests.Engine
         public void When_removing_a_non_existing_action_it_should_return_false()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
 
             //Act
@@ -74,7 +78,8 @@ namespace ActionFlow.Tests.Engine
         public void When_getting_it_should_return_the_action()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
             var fakeAction = Substitute.For<ActionBase>();
 
@@ -92,7 +97,8 @@ namespace ActionFlow.Tests.Engine
         public void When_getting_non_existing_action_it_should_throw_exception()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
 
             //Act
@@ -106,7 +112,8 @@ namespace ActionFlow.Tests.Engine
         public void When_clearing_it_should_not_fail()
         {
             //Arrange
-            var sut = new StepActionFactory();
+            var actions = CreateActionDictionary();
+            var sut = new StepActionFactory(actions);
             var actionName = "test";
             var fakeAction = Substitute.For<ActionBase>();
 
@@ -117,6 +124,13 @@ namespace ActionFlow.Tests.Engine
 
             //Assert
             Assert.IsTrue(result);
+        }
+
+        private static IEnumerable<ActionBase> CreateActionDictionary()
+        {
+            var fakeAction = Substitute.For<ActionBase>();
+            
+            return new List<ActionBase> { { fakeAction } };
         }
     }
 }

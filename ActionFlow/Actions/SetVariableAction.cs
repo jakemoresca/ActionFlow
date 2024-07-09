@@ -10,6 +10,8 @@ namespace ActionFlow.Actions
     {
         public readonly static string VariablesKey = "Variables";
 
+        public override string ActionType { get; } = "SetVariable";
+
         public override Task ExecuteAction()
         {
             var variables = ExecutionContext!.GetActionProperty<Dictionary<string, string>>(VariablesKey);

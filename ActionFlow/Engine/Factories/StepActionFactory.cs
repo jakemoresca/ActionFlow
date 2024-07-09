@@ -2,16 +2,14 @@
 
 namespace ActionFlow.Engine.Factories
 {
-	public class StepActionFactory : IStepActionFactory
+	public class StepActionFactory(IEnumerable<IActionBase> defaultActions) : IStepActionFactory
 	{
-		private readonly Dictionary<string, Func<ActionBase>> _actionRegistry;
+		private readonly Dictionary<string, Func<IActionBase>> _actionRegistry = defaultActions.Select(x =>
+			{
+				return new KeyValuePair<string, Func<IActionBase>>(x.ActionType, () => x);
+			}).ToDictionary(x => x.Key, x => x.Value);
 
-		public StepActionFactory()
-		{
-			_actionRegistry = [];
-		}
-
-		public bool AddOrUpdate(string actionName, Func<ActionBase> action)
+		public bool AddOrUpdate(string actionName, Func<IActionBase> action)
 		{
 			if (_actionRegistry.ContainsKey(actionName))
 			{
@@ -36,7 +34,7 @@ namespace ActionFlow.Engine.Factories
 			return true;
 		}
 
-		public ActionBase Get(string name)
+		public IActionBase Get(string name)
 		{
 			if (_actionRegistry.ContainsKey(name))
 			{
