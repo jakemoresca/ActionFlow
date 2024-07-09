@@ -13,6 +13,6 @@ namespace ActionFlow.Domain.Actions
 
         public JsonNode Body { get; }
         public int StatusCode { get; }
-        public Dictionary<string, IEnumerable<string>> Headers { get; } = new Dictionary<string, IEnumerable<string>>();
+        public Dictionary<string, IEnumerable<string>> Headers { get; } = [];
     }
 }

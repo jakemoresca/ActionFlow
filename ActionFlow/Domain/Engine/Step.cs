@@ -6,7 +6,7 @@
         {
             Name = name;
             ActionType = actionType;
-            Properties = properties ?? new Dictionary<string, object>();
+            Properties = properties ?? [];
             ConditionExpression = conditionExpression;
         }
 

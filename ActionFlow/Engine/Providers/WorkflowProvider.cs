@@ -4,7 +4,7 @@ namespace ActionFlow.Engine.Providers
 {
 	public class WorkflowProvider : IWorkflowProvider
 	{
-		protected List<Workflow> _workflows = new();
+		protected List<Workflow> _workflows = [];
 
 		public void AddWorkflow(Workflow workflow)
 		{
@@ -13,7 +13,7 @@ namespace ActionFlow.Engine.Providers
 
 		public List<Workflow> GetAllWorkflows()
 		{
-			List<Workflow> workflows = new List<Workflow>();
+			List<Workflow> workflows = [];
 
 			//Test
 			//Todo: Load from DB, Json, or other source
@@ -24,7 +24,7 @@ namespace ActionFlow.Engine.Providers
 					{ "age", "1" },
 					{ "canWalk", "true" },
 				}),
-				new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+				new("test variable value", "Variable", [], "age == 1 && canWalk == true")
 			};
 
 			Workflow workflow = new Workflow("Test Workflow Rule 1", steps);

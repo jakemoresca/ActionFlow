@@ -65,7 +65,7 @@ namespace ActionFlow.Tests.Engine
 
         private static List<Workflow> CreateFakeWorkflows()
         {
-            List<Workflow> workflows = new List<Workflow>();
+            List<Workflow> workflows = [];
             var steps = new List<Step>
             {
                 new("initialize", "Variable", new Dictionary<string, object>
@@ -73,7 +73,7 @@ namespace ActionFlow.Tests.Engine
                     { "age", "1" },
                     { "canWalk", "true" },
                 }),
-                new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+                new("test variable value", "Variable", [], "age == 1 && canWalk == true")
             };
 
             Workflow workflow = new Workflow("Test Workflow Rule 1", steps);
@@ -84,17 +84,17 @@ namespace ActionFlow.Tests.Engine
 
         private static List<Workflow> CreateFakeWorkflowsWithOutput()
         {
-            List<Workflow> workflows = new List<Workflow>();
+            List<Workflow> workflows = [];
             var steps = new List<Step>
             {
-                new("test variable value", "Variable", new Dictionary<string, object>(), "age == 1 && canWalk == true")
+                new("test variable value", "Variable", [], "age == 1 && canWalk == true")
             };
 
-            Workflow workflow = new Workflow("Test Workflow Rule 1", steps, new List<Parameter>
-            {
-                new() { Name = "canVote", Expression = "age >= 18 && canWalk == true"},
+            Workflow workflow = new Workflow("Test Workflow Rule 1", steps,
+			[
+				new() { Name = "canVote", Expression = "age >= 18 && canWalk == true"},
                 new() { Name = "age", Expression = "age"}
-            });
+            ]);
             workflows.Add(workflow);
 
             return workflows;

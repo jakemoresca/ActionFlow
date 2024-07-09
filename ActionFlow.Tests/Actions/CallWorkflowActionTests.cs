@@ -48,7 +48,7 @@ namespace ActionFlow.Tests.Actions
 
         private static List<Workflow> CreateFakeWorkflowsWithOutput()
         {
-            List<Workflow> workflows = new List<Workflow>();
+            List<Workflow> workflows = [];
 
             var targetWorkflowName = "Test Workflow Rule 2";
 
@@ -65,10 +65,10 @@ namespace ActionFlow.Tests.Actions
                 })
             };
 
-            Workflow workflow2 = new Workflow(targetWorkflowName, steps2, new List<Parameter>
-            {
-                new() { Name = "canVote", Expression = "canVote"}
-            });
+            Workflow workflow2 = new Workflow(targetWorkflowName, steps2,
+			[
+				new() { Name = "canVote", Expression = "canVote"}
+            ]);
             workflows.Add(workflow2);
 
             return workflows;
