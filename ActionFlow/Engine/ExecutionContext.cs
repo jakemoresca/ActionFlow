@@ -8,7 +8,7 @@ namespace ActionFlow.Engine
 
         public ExecutionContext()
         {
-            _actionProperties = new Dictionary<string, object>();
+            _actionProperties = [];
             _intepreter = new Interpreter();
         }
 

@@ -4,20 +4,13 @@ using ExecutionContext = ActionFlow.Engine.ExecutionContext;
 
 namespace ActionFlow.Actions
 {
-    public class CallWorkflowAction : ActionBase
+    public class CallWorkflowAction(IActionFlowEngine actionFlowEngine) : ActionBase
     {
         public readonly static string WorkflowNameKey = "WorkflowName";
         public readonly static string ParametersKey = "Parameters";
         public readonly static string ResultVariableKey = "ResultVariable";
 
-        private readonly IActionFlowEngine _actionFlowEngine;
-
-        public CallWorkflowAction(IActionFlowEngine actionFlowEngine)
-        {
-            _actionFlowEngine = actionFlowEngine;
-        }
-
-        public override async Task ExecuteAction()
+		public override async Task ExecuteAction()
         {
             var workflowName = ExecutionContext!.GetActionProperty<string>(WorkflowNameKey);
             var parameters = ExecutionContext!.GetActionProperty<Dictionary<string, string>>(ParametersKey);
@@ -33,7 +26,7 @@ namespace ActionFlow.Actions
                 }
             }
 
-            var engineResult = await _actionFlowEngine.ExecuteWorkflowAsync(workflowName!, executionContext);
+            var engineResult = await actionFlowEngine.ExecuteWorkflowAsync(workflowName!, executionContext);
 
             if (resultVariable != null)
             {

@@ -5,20 +5,11 @@ using ActionFlow.Engine.Factories;
 
 namespace ActionFlow.Actions
 {
-    public class ControlFlowAction : ActionBase
+    public class ControlFlowAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory) : ActionBase
     {
         public readonly static string ConditionsKey = "Conditions";
 
-        private readonly IStepExecutionEvaluator _stepExecutionEvaluator;
-        private readonly IStepActionFactory _stepActionFactory;
-
-        public ControlFlowAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory)
-        {
-            _stepExecutionEvaluator = stepExecutionEvaluator;
-            _stepActionFactory = stepActionFactory;
-        }
-
-        public override async Task ExecuteAction()
+		public override async Task ExecuteAction()
         {
             var scopedWorkflows = ExecutionContext!.GetActionProperty<List<ScopedWorkflow>>(ConditionsKey);
 
@@ -33,7 +24,7 @@ namespace ActionFlow.Actions
 
                     foreach (var step in workflow.Steps)
                     {
-                        ExecutionContext = await _stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, _stepActionFactory);
+                        ExecutionContext = await stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, stepActionFactory);
                     }
                 }
             }

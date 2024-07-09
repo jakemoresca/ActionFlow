@@ -10,21 +10,15 @@ using System.Threading.Tasks;
 
 namespace ActionFlow.Actions
 {
-    public class SendHttpCallAction : ActionBase
+    public class SendHttpCallAction(IApiClient apiClient) : ActionBase
     {
         public readonly static string UrlKey  = "Url";
         public readonly static string MethodKey = "Method";
         public readonly static string HeadersKey = "Headers";
         public readonly static string BodyKey = "Body";
         public readonly static string ResultVariableKey = "ResultVariable";
-        private readonly IApiClient _apiClient;
 
-        public SendHttpCallAction(IApiClient apiClient)
-        {
-            _apiClient = apiClient;
-        }
-
-        public override async Task ExecuteAction()
+		public override async Task ExecuteAction()
         {
             var url = ExecutionContext!.GetActionProperty<string>(UrlKey);
             var method = ExecutionContext!.GetActionProperty<string>(MethodKey);
@@ -35,12 +29,12 @@ namespace ActionFlow.Actions
             ApiCallResult result;
             if (method == "GET")
             {
-                result = await _apiClient.CallGet(url!, headers);
+                result = await apiClient.CallGet(url!, headers);
             }
             else if(method == "POST")
             {
                 var bodyJson = JsonConvert.SerializeObject(body);
-                result = await _apiClient.CallPost(url!, bodyJson, headers);
+                result = await apiClient.CallPost(url!, bodyJson, headers);
             }
             else
             {

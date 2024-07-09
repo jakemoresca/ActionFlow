@@ -45,7 +45,7 @@ namespace ActionFlow.Tests.Actions
         {
             var steps = new List<Step>
             {
-                new Step("Increment age by 1", "Variable", new Dictionary<string, object>
+                new("Increment age by 1", "Variable", new Dictionary<string, object>
                 {
                     {
                         SetVariableAction.VariablesKey, new Dictionary<string, string>

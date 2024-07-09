@@ -61,12 +61,11 @@ namespace ActionFlow.Tests.Actions
         {
             var conditions = new List<ScopedWorkflow>
             {
-                new ScopedWorkflow
-                {
+                new() {
                     Expression = "age == 1",
-                    Steps = new List<Step>
-                    {
-                        new Step("Set canWalk to false", "Variable", new Dictionary<string, object>
+                    Steps =
+					[
+						new Step("Set canWalk to false", "Variable", new Dictionary<string, object>
                         {
                             {
                                 SetVariableAction.VariablesKey, new Dictionary<string, string>
@@ -75,14 +74,13 @@ namespace ActionFlow.Tests.Actions
                                 }
                             }
                         })
-                    }
+                    ]
                 },
-                new ScopedWorkflow
-                {
+                new() {
                     Expression = "age == 18",
-                    Steps = new List<Step>
-                    {
-                        new Step("Set canWalk to true", "Variable", new Dictionary<string, object>
+                    Steps =
+					[
+						new Step("Set canWalk to true", "Variable", new Dictionary<string, object>
                         {
                             {
                                 SetVariableAction.VariablesKey, new Dictionary<string, string>
@@ -91,7 +89,7 @@ namespace ActionFlow.Tests.Actions
                                 }
                             }
                         })
-                    }
+                    ]
                 }
             };
 
@@ -102,12 +100,11 @@ namespace ActionFlow.Tests.Actions
         {
             var conditions = new List<ScopedWorkflow>
             {
-                new ScopedWorkflow
-                {
+                new() {
                     Expression = "age == 1",
-                    Steps = new List<Step>
-                    {
-                        new Step("Set canWalk to false", "Variable", new Dictionary<string, object>
+                    Steps =
+					[
+						new Step("Set canWalk to false", "Variable", new Dictionary<string, object>
                         {
                             {
                                 SetVariableAction.VariablesKey, new Dictionary<string, string>
@@ -118,14 +115,13 @@ namespace ActionFlow.Tests.Actions
                                 }
                             }
                         })
-                    }
+                    ]
                 },
-                new ScopedWorkflow
-                {
+                new() {
                     Expression = "age == 18",
-                    Steps = new List<Step>
-                    {
-                        new Step("Set canWalk to true", "Variable", new Dictionary<string, object>
+                    Steps =
+					[
+						new Step("Set canWalk to true", "Variable", new Dictionary<string, object>
                         {
                             {
                                 SetVariableAction.VariablesKey, new Dictionary<string, string>
@@ -134,7 +130,7 @@ namespace ActionFlow.Tests.Actions
                                 }
                             }
                         })
-                    }
+                    ]
                 }
             };
 

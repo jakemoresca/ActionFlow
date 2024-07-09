@@ -5,7 +5,7 @@ using ActionFlow.Engine.Factories;
 
 namespace ActionFlow.Actions
 {
-    public class ForLoopAction : ActionBase
+    public class ForLoopAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory) : ActionBase
     {
         public readonly static string InitializerVariableKey = "InitializerVariable";
         public readonly static string InitialValueKey = "InitialValue";
@@ -13,16 +13,7 @@ namespace ActionFlow.Actions
         public readonly static string IteratorKey = "Iterator";
         public readonly static string StepsKey = "Steps";
 
-        private readonly IStepExecutionEvaluator _stepExecutionEvaluator;
-        private readonly IStepActionFactory _stepActionFactory;
-
-        public ForLoopAction(IStepExecutionEvaluator stepExecutionEvaluator, IStepActionFactory stepActionFactory)
-        {
-            _stepExecutionEvaluator = stepExecutionEvaluator;
-            _stepActionFactory = stepActionFactory;
-        }
-
-        public override async Task ExecuteAction()
+		public override async Task ExecuteAction()
         {
             var initializerVariable = ExecutionContext!.GetActionProperty<string>(InitializerVariableKey);
             var initialValue = ExecutionContext!.GetActionProperty<string>(InitialValueKey);
@@ -39,7 +30,7 @@ namespace ActionFlow.Actions
                 {
                     foreach (var step in steps)
                     {
-                        ExecutionContext = await _stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, _stepActionFactory);
+                        ExecutionContext = await stepExecutionEvaluator.EvaluateAndRunStep(step, ExecutionContext, stepActionFactory);
                     }
                 }
             }
