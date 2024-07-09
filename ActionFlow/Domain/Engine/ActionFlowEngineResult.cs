@@ -4,7 +4,7 @@
     {
         public ActionFlowEngineResult()
         {
-            OutputParameters = new Dictionary<string, object>();
+            OutputParameters = [];
         }
 
         public Dictionary<string, object> OutputParameters { get; set; }

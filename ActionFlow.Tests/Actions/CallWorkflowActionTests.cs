@@ -1,5 +1,4 @@
 ﻿using ActionFlow.Actions;
-using ActionFlow.Domain.Actions;
 using ActionFlow.Domain.Engine;
 using ActionFlow.Engine;
 using ActionFlow.Engine.Factories;
@@ -8,70 +7,71 @@ using NSubstitute;
 
 namespace ActionFlow.Tests.Actions
 {
-    [TestClass]
-    public class CallWorkflowActionTests
-    {
-        [TestMethod]
-        public async Task When_executing_it_should_call_other_workflow_and_get_output_variable()
-        {
-            //Arrange
-            var workflowProvider = Substitute.For<IWorkflowProvider>();
-            var workflows = CreateFakeWorkflowsWithOutput();
-            workflowProvider.GetAllWorkflows().Returns(workflows);
+	[TestClass]
+	public class CallWorkflowActionTests
+	{
+		[TestMethod]
+		public async Task When_executing_it_should_call_other_workflow_and_get_output_variable()
+		{
+			//Arrange
+			var workflowProvider = Substitute.For<IWorkflowProvider>();
+			var workflows = CreateFakeWorkflowsWithOutput();
+			workflowProvider.GetAllWorkflows().Returns(workflows);
 
-            var stepActionFactory = Substitute.For<IStepActionFactory>();
-            stepActionFactory.Get("Variable").Returns(new SetVariableAction());
+			var stepActionFactory = Substitute.For<IStepActionFactory>();
+			stepActionFactory.Get("Variable").Returns(new SetVariableAction());
 
-            var stepExecutionEvaluator = new StepExecutionEvaluator();
-            var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
+			var stepExecutionEvaluator = new StepExecutionEvaluator();
 
-            var sut = new CallWorkflowAction();
-            var executionContext = new ActionFlow.Engine.ExecutionContext(actionFlowEngine);
-            var parameters = new Dictionary<string, string>
-            {
-                { "age", "18" }
-            };
-            var targetWorkflowName = "Test Workflow Rule 2";
-            var resultVariableName = "result";
-            executionContext.AddOrUpdateActionProperty(CallWorkflowAction.WorkflowNameKey, targetWorkflowName);
-            executionContext.AddOrUpdateActionProperty(CallWorkflowAction.ResultVariableKey, resultVariableName);
-            executionContext.AddOrUpdateActionProperty(CallWorkflowAction.ParametersKey, parameters);
-            sut.SetExecutionContext(executionContext);
+			var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
-            //Act
-            await sut.ExecuteAction();
+			var sut = new CallWorkflowAction();
+			var executionContext = new ActionFlow.Engine.ExecutionContext(actionFlowEngine);
+			var parameters = new Dictionary<string, string>
+			{
+				{ "age", "18" }
+			};
+			var targetWorkflowName = "Test Workflow Rule 2";
+			var resultVariableName = "result";
+			executionContext.AddOrUpdateActionProperty(CallWorkflowAction.WorkflowNameKey, targetWorkflowName);
+			executionContext.AddOrUpdateActionProperty(CallWorkflowAction.ResultVariableKey, resultVariableName);
+			executionContext.AddOrUpdateActionProperty(CallWorkflowAction.ParametersKey, parameters);
+			sut.SetExecutionContext(executionContext);
 
-            //Assert
-            var output = executionContext.EvaluateExpression<Dictionary<string, object>>(resultVariableName);
-            Assert.AreEqual(true, output["canVote"]);
-        }
+			//Act
+			await sut.ExecuteAction();
 
-        private static List<Workflow> CreateFakeWorkflowsWithOutput()
-        {
-            List<Workflow> workflows = new List<Workflow>();
+			//Assert
+			var output = executionContext.EvaluateExpression<Dictionary<string, object>>(resultVariableName);
+			Assert.IsTrue((bool)output["canVote"]);
+		}
 
-            var targetWorkflowName = "Test Workflow Rule 2";
+		private static List<Workflow> CreateFakeWorkflowsWithOutput()
+		{
+			List<Workflow> workflows = [];
 
-            var steps2 = new List<Step>
-            {
-                new Step("test variable value", "Variable", new Dictionary<string, object>
-                {
-                    { 
-                        SetVariableAction.VariablesKey, new Dictionary<string, string>
-                        {
-                            { "canVote", "age >= 18" }
-                        }
-                    }
-                })
-            };
+			var targetWorkflowName = "Test Workflow Rule 2";
 
-            Workflow workflow2 = new Workflow(targetWorkflowName, steps2, new List<Parameter>
-            {
-                new Parameter{ Name = "canVote", Expression = "canVote"}
-            });
-            workflows.Add(workflow2);
+			var steps2 = new List<Step>
+			{
+				new("test variable value", "Variable", new Dictionary<string, object>
+				{
+					{
+						SetVariableAction.VariablesKey, new Dictionary<string, string>
+						{
+							{ "canVote", "age >= 18" }
+						}
+					}
+				})
+			};
 
-            return workflows;
-        }
-    }
+			Workflow workflow2 = new Workflow(targetWorkflowName, steps2,
+			[
+				new Parameter{ Name = "canVote", Expression = "canVote"}
+			]);
+			workflows.Add(workflow2);
+
+			return workflows;
+		}
+	}
 }
