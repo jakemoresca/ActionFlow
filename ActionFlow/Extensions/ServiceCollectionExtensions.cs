@@ -27,7 +27,7 @@ namespace ActionFlow.Extensions
 		public static void UseActionFlowEngine(this IServiceCollection services)
 		{
 			services.AddScoped<IActionFlowEngine, ActionFlowEngine>();
-			services.AddScoped<IWorkflowProvider, WorkflowProvider>();
+			services.AddScoped<IWorkflowProvider, BlankWorkflowProvider>();
 			services.AddScoped<IStepExecutionEvaluator, StepExecutionEvaluator>();
 			services.AddScoped<IStepActionFactory, StepActionFactory>();
 			services.AddScoped<IApiClient, ApiClient>();

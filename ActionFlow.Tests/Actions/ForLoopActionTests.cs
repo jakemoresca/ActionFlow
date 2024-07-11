@@ -34,20 +34,20 @@ namespace ActionFlow.Tests.Actions
 			Assert.AreEqual(21, executionContext.EvaluateExpression<int>("age"));
 		}
 
-		private static List<Step> CreateLoopSteps()
-		{
-			var steps = new List<Step>
-			{
-				new("Increment age by 1", "Variable", new Dictionary<string, object>
-				{
-					{
-						SetVariableAction.VariablesKey, new Dictionary<string, string>
-						{
-							{ "age", "age + 1" }
-						}
-					}
-				})
-			};
+        private static List<Step> CreateLoopSteps()
+        {
+            var steps = new List<Step>
+            {
+                new("Increment age by 1", "Variable", new Dictionary<string, object>
+                {
+                    {
+                        SetVariableAction.VariablesKey, new Dictionary<string, string>
+                        {
+                            { "age", "age + 1" }
+                        }
+                    }
+                })
+            };
 
 			return steps;
 		}

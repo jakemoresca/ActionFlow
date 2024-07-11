@@ -1,10 +1,19 @@
 ﻿namespace ActionFlow.Domain.Engine
 {
-    public class Step(string name, string actionType, Dictionary<string, object>? properties = null, string? conditionExpression = null)
+	public class Step
 	{
-		public string Name { get; } = name;
-		public string ActionType { get; } = actionType;
-		public string? ConditionExpression { get; } = conditionExpression;
-		public Dictionary<string, object>? Properties { get; } = properties ?? [];
+		public Step(string name, string actionType, Dictionary<string, object>? properties = null, string? conditionExpression = null)
+		{
+			Name = name;
+			ActionType = actionType;
+			Properties = properties ?? [];
+			ConditionExpression = conditionExpression;
+		}
+
+		public string Name { get; }
+		public string ActionType { get; }
+		public string? ConditionExpression { get; }
+
+		public Dictionary<string, object>? Properties { get; }
 	}
 }
