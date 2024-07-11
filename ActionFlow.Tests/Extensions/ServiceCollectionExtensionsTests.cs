@@ -23,10 +23,10 @@ namespace ActionFlow.Tests.Extensions
 
 			//Assert
 			Assert.IsNotNull(provider.GetRequiredService<IActionFlowEngine>());
-			Assert.IsNotNull(provider.GetRequiredService<IWorkflowProvider>());
 			Assert.IsNotNull(provider.GetRequiredService<IStepExecutionEvaluator>());
 			Assert.IsNotNull(provider.GetRequiredService<IStepActionFactory>());
 			Assert.IsNotNull(provider.GetRequiredService<IApiClient>());
+			Assert.IsNotNull(provider.GetRequiredService<IWorkflowProvider>());
 			Assert.IsNotNull(provider.GetRequiredService<IEnumerable<IActionBase>>());
 
 			var stepActionFactory = provider.GetRequiredService<IStepActionFactory>();

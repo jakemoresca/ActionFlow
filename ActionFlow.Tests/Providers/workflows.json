@@ -1,0 +1,23 @@
+﻿[
+  {
+    "WorkflowName": "Test",
+    "Steps": [
+      {
+        "Name": "initialize",
+        "ActionType": "Variable",
+        "ConditionExpression": null,
+        "Properties": {
+          "age": "1",
+          "canWalk": "true"
+        }
+      },
+      {
+        "Name": "test variable value",
+        "ActionType": "Variable",
+        "ConditionExpression": "age == 1 \u0026\u0026 canWalk == true",
+        "Properties": {}
+      }
+    ],
+    "OutputParameters": null
+  }
+]
