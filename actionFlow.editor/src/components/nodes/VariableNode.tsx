@@ -17,14 +17,23 @@ export default function VariableNode({
   const renderProperties = (data: VariableNodeData) => {
     var properties: React.ReactNode[] = [];
 
-    if(data.properties == null)
+    if (data.properties == null)
       return properties;
 
     for (const key in data.properties) {
-      properties.push(<p key={`variable_1_${key}`} className="text-xs font-normal text-gray-700 dark:text-gray-400">{key} = {data.properties[key]} </p>)
+      properties.push(<li key={`variable_1_${key}`} className="flex space-x-2 rtl:space-x-reverse items-center">
+        <span className="leading-tight text-xs">{key} = {data.properties[key]}</span>
+      </li>)
     }
 
-    return properties;
+    var list = (
+      <>
+        <ul role="list" className="text-gray-500 dark:text-gray-400">
+          {properties}
+        </ul>
+      </>)
+
+    return list;
   }
 
   return (
