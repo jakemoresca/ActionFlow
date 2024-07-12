@@ -8,6 +8,7 @@ import {
   useNodesState,
   useEdgesState,
   type OnConnect,
+  Panel,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -33,13 +34,27 @@ export default function App() {
       edgeTypes={edgeTypes}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
-      edgesReconnectable={false}
-      edgesFocusable={false}
+      nodesConnectable={true}
+      nodesDraggable={true}
+      elementsSelectable={true}
       fitView
+      className="bg-white dark:bg-gray-900 antialiased"
     >
       <Background />
       <MiniMap />
       <Controls />
+      <Panel position="top-left">
+
+        <div className="inline-flex rounded-md shadow-sm" role="group">
+          <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+            Add
+          </button>
+          <button type="button" className="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+            Delete
+          </button>
+        </div>
+
+      </Panel>
     </ReactFlow>
   );
 }
