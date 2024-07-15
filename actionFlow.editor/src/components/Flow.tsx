@@ -22,6 +22,7 @@ import { initialNodes, nodeTypes, type CustomNodeType } from "./nodes";
 import { initialEdges, edgeTypes, type CustomEdgeType } from "./edges";
 import ActionDrawer from "./left-pane/ActionDrawer";
 import AddActionModal from "./left-pane/AddActionModal";
+import { generateNode } from "@/modules/nodes/node-generator";
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] =
@@ -82,6 +83,33 @@ export default function App() {
     );
   }, [selectedNodes, nodes, edges, setNodes, setEdges]);
 
+  const handleAddNode = useCallback((nodeType: string) => {
+    const parentNode = selectedNodes[0];
+    const nodeToAdd = generateNode(nodeType, parentNode);
+
+    setNodes((nds) => nds.concat(nodeToAdd));
+
+    setEdges((edges) => {
+      const connectedEdges = getConnectedEdges([parentNode], edges);
+
+      const remainingEdges = edges.map(
+        (edge) => connectedEdges.includes(edge) && edge.source === parentNode.id ? {
+          ...edge,
+          id: `${nodeToAdd.id}->${edge.target}`,
+          source: nodeToAdd.id
+        } : edge
+      );
+
+      const createdEdges = [{ id: `${parentNode.id}->${nodeToAdd.id}`, source: parentNode.id, target: nodeToAdd.id, animated: false }]
+
+      return [...remainingEdges, ...createdEdges];
+    });
+
+    setSelectedNodes([nodeToAdd]);
+    setOpenAddActionModal(false);
+
+  }, [selectedNodes, nodes, edges, setNodes, setEdges, setSelectedNodes, setOpenAddActionModal])
+
   return (
     <ReactFlow<CustomNodeType, CustomEdgeType>
       nodes={nodes}
@@ -114,6 +142,7 @@ export default function App() {
       <AddActionModal
         showModal={showAddActionModal}
         onCloseModal={handleCloseAddActionModal}
+        onAddNode={handleAddNode}
       />
     </ReactFlow>
   );
