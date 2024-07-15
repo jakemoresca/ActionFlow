@@ -3,7 +3,7 @@ import { Handle, Position } from "@xyflow/react";
 import ConditionSection from "./ConditionSection";
 
 export type VariableNodeData = {
-  properties?: Map<string, string>
+  properties?: Record<string, string>
   label?: string;
   condition?: string
 };

@@ -44,9 +44,16 @@ export const initialNodes = [
   },
 ] satisfies Node[];
 
+export const NodeTypeKeys = {
+  "variable": {
+    "type": "variable",
+    "name": "Set Variable"
+  }
+}
+
 export const nodeTypes = {
   'position-logger': PositionLoggerNode,
-  'variable': VariableNode
+  [NodeTypeKeys.variable.type]: VariableNode
   // Add any of your custom nodes here!
 } satisfies NodeTypes;
 
