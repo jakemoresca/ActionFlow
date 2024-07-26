@@ -1,14 +1,10 @@
 import type { Node, NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
 import ConditionSection from "./ConditionSection";
+import { BaseNode, BaseNodeData } from "./BaseNode";
 
-export type VariableNodeData = {
-  properties?: Record<string, string>
-  label?: string;
-  condition?: string
-};
-
-export type VariableNode = Node<VariableNodeData>;
+export type VariableNodeData = BaseNodeData;
+export type VariableNode = Node<VariableNodeData> & BaseNode;
 
 export default function VariableNode({
   data,
