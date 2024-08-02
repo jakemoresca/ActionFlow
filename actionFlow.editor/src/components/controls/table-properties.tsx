@@ -1,8 +1,10 @@
 import { Table, TextInput } from "flowbite-react";
+import { ChangeEvent } from "react";
 
 export type TablePropertiesData = {
   properties?: Record<string, string>[];
   columnDefinitions: TablePropertiesColumnDefinition[]
+  handlePropertyChange?: (event: ChangeEvent<HTMLInputElement>) => void
 };
 
 export type TablePropertiesColumnDefinition = {
@@ -18,7 +20,7 @@ export enum TablePropertiesColumnType {
   NumberField
 }
 
-export default function TableProperties({ properties, columnDefinitions }: TablePropertiesData) {
+export default function TableProperties({ properties, columnDefinitions, handlePropertyChange }: TablePropertiesData) {
 
   const columnCount = columnDefinitions.length;
 
@@ -64,7 +66,7 @@ export default function TableProperties({ properties, columnDefinitions }: Table
       case TablePropertiesColumnType.Label:
         return (<Table.Cell key={key}>{property[columnDefinition.field]}</Table.Cell>)
       case TablePropertiesColumnType.TextField:
-        return (<Table.Cell key={key}><TextInput name={id} placeholder={columnDefinition.name} value={property[columnDefinition.field]} /></Table.Cell>)
+        return (<Table.Cell key={key}><TextInput name={id} placeholder={columnDefinition.name} value={property[columnDefinition.field]} onChange={handlePropertyChange} /></Table.Cell>)
     }
   }
 

@@ -3,6 +3,7 @@ import { Node } from "@xyflow/react";
 import { getNodeColumnDefinition, toTableProperties } from "@/modules/nodes/node-column-definition-provider";
 import { BaseNodeData } from "../nodes/BaseNode";
 import TableProperties from "../controls/table-properties";
+import NodeProperties from "./NodeProperties";
 
 export type ActionDrawerData = {
   onAddAction?: () => void;
@@ -32,10 +33,7 @@ export default function ActionDrawer({ onAddAction: addAction, onDeleteAction, s
 
     if (!selectedNode) return (<></>)
 
-    const nodeColumnDefinitions = getNodeColumnDefinition(selectedNode.type!)
-    const tableProperties = toTableProperties(selectedNode.data as BaseNodeData);
-
-    return (<TableProperties columnDefinitions={nodeColumnDefinitions} properties={tableProperties} />)
+    return (<NodeProperties node={selectedNode}></NodeProperties>)
   }
 
   return (
@@ -47,9 +45,6 @@ export default function ActionDrawer({ onAddAction: addAction, onDeleteAction, s
           <Button color="gray" disabled={!canDelete} onClick={() => onDeleteAction && onDeleteAction()}>Delete</Button>
         </Button.Group>
         <div className="mb-6 mt-5">
-          <Label htmlFor="title" className="mb-2 block">
-            Properties
-          </Label>
           {createPropetiesSection()}
         </div>
       </Drawer.Items>
