@@ -22,7 +22,7 @@ export const initialNodes = [
     position: { x: 0, y: 100 },
     data: { 
       label: 'Initialize Variable',
-      properties: {
+      variables: {
         "age": "1",
         "canWalk": "true"
       }

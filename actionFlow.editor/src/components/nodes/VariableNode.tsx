@@ -1,35 +1,34 @@
 import type { Node, NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
+import { NodeBase } from '@xyflow/system';
 import ConditionSection from "./ConditionSection";
+import { BaseNode, BaseNodeData } from "./BaseNode";
 
-export type VariableNodeData = {
-  properties?: Record<string, string>
-  label?: string;
-  condition?: string
-};
-
-export type VariableNode = Node<VariableNodeData>;
+export type VariableNodeData = BaseNodeData & {
+  variables?: Record<string, string>
+}
+export type VariableNode = NodeBase & Node<VariableNodeData>;
 
 export default function VariableNode({
-  data,
+  data
 }: NodeProps<VariableNode>) {
 
   const renderProperties = (data: VariableNodeData) => {
-    var properties: React.ReactNode[] = [];
+    var variables: React.ReactNode[] = [];
 
-    if (data.properties == null)
-      return properties;
+    if (data.variables == null)
+      return variables;
 
-    for (const key in data.properties) {
-      properties.push(<li key={`variable_1_${key}`} className="flex space-x-2 rtl:space-x-reverse items-center">
-        <span className="leading-tight text-xs">{key} = {data.properties[key]}</span>
+    for (const key in data.variables) {
+      variables.push(<li key={`variable_1_${key}`} className="flex space-x-2 rtl:space-x-reverse items-center">
+        <span className="leading-tight text-xs">{key} = {data.variables[key]}</span>
       </li>)
     }
 
     var list = (
       <>
         <ul role="list" className="text-gray-500 dark:text-gray-400">
-          {properties}
+          {variables}
         </ul>
       </>)
 
