@@ -1,5 +1,7 @@
 import { Table, TextInput } from "flowbite-react";
 import { ChangeEvent } from "react";
+import PropertyField from "./property-field";
+import { NodePropertyDefinition, NodePropertyType } from "../left-pane/NodeProperties";
 
 export type TablePropertiesData = {
   properties?: Record<string, string>[];
@@ -9,15 +11,9 @@ export type TablePropertiesData = {
 
 export type TablePropertiesColumnDefinition = {
   name: string
-  type: TablePropertiesColumnType,
+  type: NodePropertyType,
   index: number
   field: string
-}
-
-export enum TablePropertiesColumnType {
-  Label,
-  TextField,
-  NumberField
 }
 
 export default function TableProperties({ properties, columnDefinitions, handlePropertyChange }: TablePropertiesData) {
@@ -59,15 +55,16 @@ export default function TableProperties({ properties, columnDefinitions, handleP
   }
 
   const createTableCell = (columnDefinition: TablePropertiesColumnDefinition, property: Record<string, string>, rowIndex: number) => {
-    const id = `row_${rowIndex}_${property[columnDefinition.field]}`;
     const key = `key_${rowIndex}_${property[columnDefinition.field]}`;
 
-    switch(columnDefinition.type) {
-      case TablePropertiesColumnType.Label:
-        return (<Table.Cell key={key}>{property[columnDefinition.field]}</Table.Cell>)
-      case TablePropertiesColumnType.TextField:
-        return (<Table.Cell key={key}><TextInput name={id} placeholder={columnDefinition.name} value={property[columnDefinition.field]} onChange={handlePropertyChange} /></Table.Cell>)
+    const propertyDefinition: NodePropertyDefinition = {
+      propertyName: columnDefinition.field,
+      propertyType: columnDefinition.type,
+      propertyLabel: columnDefinition.name,
+      index: rowIndex
     }
+
+    return (<Table.Cell key={key}><PropertyField nodeType="" properties={property} propertyDefinition={propertyDefinition} handlePropertyChange={handlePropertyChange} /></Table.Cell>)
   }
 
   return (

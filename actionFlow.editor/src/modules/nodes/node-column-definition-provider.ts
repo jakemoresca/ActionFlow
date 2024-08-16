@@ -1,27 +1,26 @@
-import { TablePropertiesColumnDefinition, TablePropertiesColumnType } from "@/components/controls/table-properties";
+import { TablePropertiesColumnDefinition } from "@/components/controls/table-properties";
+import { NodePropertyType } from "@/components/left-pane/NodeProperties";
 import { NodeTypeKeys } from "@/components/nodes";
-import { BaseNode, BaseNodeData } from "@/components/nodes/BaseNode";
-import type { Node, NodeProps } from '@xyflow/react';
 
-export function getNodeColumnDefinition(nodeType: string): TablePropertiesColumnDefinition[] {
-    if (nodeType === NodeTypeKeys.variable.type) {
+export function getNodeColumnDefinition(nodeType: string, propertyName: string): TablePropertiesColumnDefinition[] {
+    if (nodeType === NodeTypeKeys.variable.type && propertyName == "variables") {
         return getVariableNodeColumnDefinition();
     }
 
-    return getVariableNodeColumnDefinition();
+    return [];
 }
 
 function getVariableNodeColumnDefinition(): TablePropertiesColumnDefinition[] {
     const columnDefinitions: TablePropertiesColumnDefinition[] = [
         {
             name: "Name",
-            type: TablePropertiesColumnType.TextField,
+            type: NodePropertyType.TextField,
             index: 0,
             field: "key"
         },
         {
             name: "Value",
-            type: TablePropertiesColumnType.TextField,
+            type: NodePropertyType.TextField,
             index: 1,
             field: "value"
         }
@@ -30,13 +29,13 @@ function getVariableNodeColumnDefinition(): TablePropertiesColumnDefinition[] {
     return columnDefinitions;
 }
 
-export function toTableProperties(data: BaseNodeData): Record<string, string>[] {
+export function toTableProperties(data: Record<string, any>, propertyKey: string): Record<string, string>[] {
     var nodeProperties: Record<string, string>[] = [];
 
-    for (const key in data.properties) {
+    for (const key in data[propertyKey]) {
         nodeProperties.push({
             "key": key,
-            "value": data.properties[key]
+            "value": data[propertyKey][key]
         })
     }
 

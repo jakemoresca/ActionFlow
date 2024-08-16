@@ -1,7 +1,6 @@
 import type { Node, NodeProps } from '@xyflow/react';
 
-export type BaseNodeData = {
-  properties?: Record<string, string>
+export type BaseNodeData = Record<string, string> & {
   label?: string;
   condition?: string
 };
