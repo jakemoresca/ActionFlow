@@ -2,7 +2,7 @@ import type { Node, NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
 import { NodeBase } from '@xyflow/system';
 import ConditionSection from "./ConditionSection";
-import { BaseNode, BaseNodeData } from "./BaseNode";
+import { BaseNodeData } from "./BaseNode";
 
 export type VariableNodeData = BaseNodeData & {
   variables?: Record<string, string>

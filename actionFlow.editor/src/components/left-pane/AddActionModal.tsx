@@ -31,6 +31,11 @@ export const AddActionModalDataActions = [
     type: NodeTypeKeys.variable.type,
     icon: actionIcon,
   },
+  {
+    name: NodeTypeKeys.sendHttpCall.name,
+    type: NodeTypeKeys.sendHttpCall.type,
+    icon: actionIcon,
+  },
 ];
 
 export default function AddActionModal({

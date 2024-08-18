@@ -8,6 +8,10 @@ import VariableNode, {
   type VariableNode as VariableNodeType,
 } from './VariableNode';
 
+import SendHttpCallNode, {
+  type SendHttpCallNode as SendHttpCallNodeType,
+} from './SendHttpCallNode';
+
 export const initialNodes = [
   {
     id: 'a',
@@ -48,12 +52,17 @@ export const NodeTypeKeys = {
   "variable": {
     "type": "variable",
     "name": "Set Variable"
+  },
+  "sendHttpCall": {
+    "type": "sendHttpCall",
+    "name": "Send Http Call"
   }
 }
 
 export const nodeTypes = {
   'position-logger': PositionLoggerNode,
-  [NodeTypeKeys.variable.type]: VariableNode
+  [NodeTypeKeys.variable.type]: VariableNode,
+  [NodeTypeKeys.sendHttpCall.type]: SendHttpCallNode
   // Add any of your custom nodes here!
 } satisfies NodeTypes;
 

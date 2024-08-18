@@ -7,6 +7,9 @@ export function getNodePropertyDefinitions(nodeType: string): NodePropertyDefini
     if (nodeType === NodeTypeKeys.variable.type) {
         propertyDefinitions = propertyDefinitions.concat(getVariableNodePropertyDefinition());
     }
+    else if (nodeType === NodeTypeKeys.sendHttpCall.type) {
+        propertyDefinitions = propertyDefinitions.concat(getSendHttpCallPropertyDefinition());
+    }
 
     return propertyDefinitions.sort(x => x.index);
 }
@@ -37,6 +40,44 @@ function getVariableNodePropertyDefinition(): NodePropertyDefinition[] {
             propertyLabel: "Variables",
             propertyType: NodePropertyType.Properties,
             index: 2
+        }
+    ]
+
+    return propertyDefinitions;
+}
+
+function getSendHttpCallPropertyDefinition(): NodePropertyDefinition[] {
+    const propertyDefinitions: NodePropertyDefinition[] = [
+        {
+            propertyName: "url",
+            propertyLabel: "Url",
+            propertyType: NodePropertyType.TextField,
+            index: 2
+        },
+        {
+            propertyName: "method",
+            propertyLabel: "Method",
+            propertyType: NodePropertyType.List,
+            propertySources: ["GET", "POST", "PUT", "DELETE"],
+            index: 3
+        },
+        {
+            propertyName: "headers",
+            propertyLabel: "Headers",
+            propertyType: NodePropertyType.Properties,
+            index: 4
+        },
+        {
+            propertyName: "body",
+            propertyLabel: "Body",
+            propertyType: NodePropertyType.TextArea,
+            index: 5
+        },
+        {
+            propertyName: "resultVariable",
+            propertyLabel: "Result Variable",
+            propertyType: NodePropertyType.TextField,
+            index: 6
         }
     ]
 
