@@ -2,7 +2,7 @@ import type { Node, NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
 import { NodeBase } from '@xyflow/system';
 import ConditionSection from "./ConditionSection";
-import { BaseNode, BaseNodeData } from "./BaseNode";
+import { BaseNodeData } from "./BaseNode";
 
 export type VariableNodeData = BaseNodeData & {
   variables?: Record<string, string>
@@ -10,7 +10,7 @@ export type VariableNodeData = BaseNodeData & {
 export type VariableNode = NodeBase & Node<VariableNodeData>;
 
 export default function VariableNode({
-  data
+  id, data
 }: NodeProps<VariableNode>) {
 
   const renderProperties = (data: VariableNodeData) => {
@@ -38,13 +38,13 @@ export default function VariableNode({
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-      <Handle type="target" position={Position.Top} />
+      <Handle type="target" position={Position.Top} id={`node_${id}_top`} />
       <h5 className="text-xs font-bold dark:text-white">{data.label}</h5>
 
       <ConditionSection condition={data.condition} />
       {renderProperties(data)}
 
-      <Handle type="source" position={Position.Bottom} />
+      <Handle type="source" position={Position.Bottom} id={`node_${id}_bottom`} />
     </div>
   );
 }

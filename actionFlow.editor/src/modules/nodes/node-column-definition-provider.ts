@@ -4,13 +4,16 @@ import { NodeTypeKeys } from "@/components/nodes";
 
 export function getNodeColumnDefinition(nodeType: string, propertyName: string): TablePropertiesColumnDefinition[] {
     if (nodeType === NodeTypeKeys.variable.type && propertyName == "variables") {
-        return getVariableNodeColumnDefinition();
+        return getDictionaryKeyValueColumnDefinitions();
+    }
+    else if (nodeType === NodeTypeKeys.sendHttpCall.type && propertyName == "headers") {
+        return getDictionaryKeyValueColumnDefinitions();
     }
 
     return [];
 }
 
-function getVariableNodeColumnDefinition(): TablePropertiesColumnDefinition[] {
+function getDictionaryKeyValueColumnDefinitions(): TablePropertiesColumnDefinition[] {
     const columnDefinitions: TablePropertiesColumnDefinition[] = [
         {
             name: "Name",

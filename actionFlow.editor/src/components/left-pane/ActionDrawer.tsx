@@ -1,9 +1,7 @@
 import { Drawer, Button, Label } from "flowbite-react"
 import { Node } from "@xyflow/react";
-import { getNodeColumnDefinition, toTableProperties } from "@/modules/nodes/node-column-definition-provider";
-import { BaseNodeData } from "../nodes/BaseNode";
-import TableProperties from "../controls/table-properties";
 import NodeProperties from "./NodeProperties";
+import { NodeTypeKeys } from "../nodes";
 
 export type ActionDrawerData = {
   onAddAction?: () => void;
@@ -14,12 +12,18 @@ export type ActionDrawerData = {
 export default function ActionDrawer({ onAddAction: addAction, onDeleteAction, selectedNodes }: ActionDrawerData) {
 
   const validNodeTypesToDelete = [
-    "variable"
+    NodeTypeKeys.variable.type,
+    NodeTypeKeys.sendHttpCall.type,
+    NodeTypeKeys.controlFlow.type,
+    NodeTypeKeys.forLoop.type
   ]
 
   const validNodeTypesToAddTo = [
     "input",
-    "variable"
+    NodeTypeKeys.variable.type,
+    NodeTypeKeys.sendHttpCall.type,
+    NodeTypeKeys.controlFlow.type,
+    NodeTypeKeys.forLoop.type
   ]
 
   const canDelete = selectedNodes && selectedNodes.length > 0 && selectedNodes?.every(x => {

@@ -13,6 +13,7 @@ export type NodePropertyDefinition = {
   propertyType: NodePropertyType;
   propertyLabel: string;
   index: number;
+  propertySources?: string[]
 };
 
 export enum NodePropertyType {
@@ -20,6 +21,8 @@ export enum NodePropertyType {
   TextField,
   NumberField,
   Properties,
+  List,
+  TextArea,
 }
 
 export default function NodeProperties({ node }: NodePropertiesData) {
