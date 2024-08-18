@@ -40,6 +40,10 @@ export const AddActionModalDataActions = [
     name: NodeTypeKeys.controlFlow.name,
     type: NodeTypeKeys.controlFlow.type,
     icon: actionIcon,
+  },{
+    name: NodeTypeKeys.forLoop.name,
+    type: NodeTypeKeys.forLoop.type,
+    icon: actionIcon,
   },
 ];
 

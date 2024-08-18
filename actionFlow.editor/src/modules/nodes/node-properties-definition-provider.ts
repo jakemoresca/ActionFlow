@@ -13,6 +13,9 @@ export function getNodePropertyDefinitions(nodeType: string): NodePropertyDefini
     else if (nodeType === NodeTypeKeys.controlFlow.type) {
         propertyDefinitions = getControlFlowPropertyDefinition();
     }
+    else if (nodeType === NodeTypeKeys.forLoop.type) {
+        propertyDefinitions = propertyDefinitions.concat(getForLoopPropertyDefinition());
+    }
 
     return propertyDefinitions.sort(x => x.index);
 }
@@ -100,6 +103,37 @@ function getSendHttpCallPropertyDefinition(): NodePropertyDefinition[] {
             propertyLabel: "Result Variable",
             propertyType: NodePropertyType.TextField,
             index: 6
+        }
+    ]
+
+    return propertyDefinitions;
+}
+
+function getForLoopPropertyDefinition(): NodePropertyDefinition[] {
+    const propertyDefinitions: NodePropertyDefinition[] = [
+        {
+            propertyName: "initializerVariable",
+            propertyLabel: "Initializer Variable",
+            propertyType: NodePropertyType.TextField,
+            index: 2
+        },
+        {
+            propertyName: "initialValue",
+            propertyLabel: "Initial Value",
+            propertyType: NodePropertyType.TextField,
+            index: 3
+        },
+        {
+            propertyName: "loopCondition",
+            propertyLabel: "Loop Condition",
+            propertyType: NodePropertyType.TextField,
+            index: 4
+        },
+        {
+            propertyName: "iterator",
+            propertyLabel: "Iterator",
+            propertyType: NodePropertyType.TextField,
+            index: 5
         }
     ]
 
