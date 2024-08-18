@@ -13,13 +13,15 @@ export default function ActionDrawer({ onAddAction: addAction, onDeleteAction, s
 
   const validNodeTypesToDelete = [
     NodeTypeKeys.variable.type,
-    NodeTypeKeys.sendHttpCall.type
+    NodeTypeKeys.sendHttpCall.type,
+    NodeTypeKeys.controlFlow.type
   ]
 
   const validNodeTypesToAddTo = [
     "input",
     NodeTypeKeys.variable.type,
-    NodeTypeKeys.sendHttpCall.type
+    NodeTypeKeys.sendHttpCall.type,
+    NodeTypeKeys.controlFlow.type
   ]
 
   const canDelete = selectedNodes && selectedNodes.length > 0 && selectedNodes?.every(x => {

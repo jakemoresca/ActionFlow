@@ -12,6 +12,10 @@ import SendHttpCallNode, {
   type SendHttpCallNode as SendHttpCallNodeType,
 } from './SendHttpCallNode';
 
+import ControlFlowNode, {
+  type ControlFlowNode as ControlFlowNodeType,
+} from './ControlFlowNode';
+
 export const initialNodes = [
   {
     id: 'a',
@@ -56,15 +60,20 @@ export const NodeTypeKeys = {
   "sendHttpCall": {
     "type": "sendHttpCall",
     "name": "Send Http Call"
+  },
+  "controlFlow": {
+    "type": "controlFlow",
+    "name": "Control Flow"
   }
 }
 
 export const nodeTypes = {
   'position-logger': PositionLoggerNode,
   [NodeTypeKeys.variable.type]: VariableNode,
-  [NodeTypeKeys.sendHttpCall.type]: SendHttpCallNode
+  [NodeTypeKeys.sendHttpCall.type]: SendHttpCallNode,
+  [NodeTypeKeys.controlFlow.type]: ControlFlowNode
   // Add any of your custom nodes here!
 } satisfies NodeTypes;
 
 // Append the types of you custom edges to the BuiltInNode type
-export type CustomNodeType = BuiltInNode | PositionLoggerNodeType | VariableNodeType;
+export type CustomNodeType = BuiltInNode | PositionLoggerNodeType | VariableNodeType | SendHttpCallNodeType | ControlFlowNodeType

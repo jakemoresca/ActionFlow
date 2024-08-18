@@ -10,6 +10,9 @@ export function getNodePropertyDefinitions(nodeType: string): NodePropertyDefini
     else if (nodeType === NodeTypeKeys.sendHttpCall.type) {
         propertyDefinitions = propertyDefinitions.concat(getSendHttpCallPropertyDefinition());
     }
+    else if (nodeType === NodeTypeKeys.controlFlow.type) {
+        propertyDefinitions = getControlFlowPropertyDefinition();
+    }
 
     return propertyDefinitions.sort(x => x.index);
 }
@@ -24,6 +27,25 @@ function getBasePropertyDefinition(): NodePropertyDefinition[] {
         },
         {
             propertyName: "condition",
+            propertyLabel: "Condition",
+            propertyType: NodePropertyType.TextField,
+            index: 1
+        }
+    ]
+
+    return propertyDefinitions;
+}
+
+function getControlFlowPropertyDefinition(): NodePropertyDefinition[] {
+    const propertyDefinitions: NodePropertyDefinition[] = [
+        {
+            propertyName: "label",
+            propertyLabel: "Label",
+            propertyType: NodePropertyType.TextField,
+            index: 0
+        },
+        {
+            propertyName: "conditions.expressions",
             propertyLabel: "Condition",
             propertyType: NodePropertyType.TextField,
             index: 1
