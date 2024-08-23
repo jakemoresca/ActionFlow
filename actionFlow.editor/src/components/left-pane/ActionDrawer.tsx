@@ -1,4 +1,4 @@
-import { Drawer, Button, Label } from "flowbite-react"
+import { Drawer, Button, Label, Accordion, AccordionPanel, ListGroup } from "flowbite-react"
 import { Node } from "@xyflow/react";
 import NodeProperties from "./NodeProperties";
 import { NodeTypeKeys } from "../nodes";
@@ -44,13 +44,34 @@ export default function ActionDrawer({ onAddAction: addAction, onDeleteAction, s
     <Drawer open={true} onClose={() => { }} backdrop={false}>
       <Drawer.Header title="Action Flow Editor" />
       <Drawer.Items>
-        <Button.Group>
-          <Button color="gray" disabled={!canAdd} onClick={() => addAction && addAction()}>Add</Button>
-          <Button color="gray" disabled={!canDelete} onClick={() => onDeleteAction && onDeleteAction()}>Delete</Button>
-        </Button.Group>
-        <div className="mb-6 mt-5">
-          {createPropetiesSection()}
-        </div>
+        <Accordion>
+          <AccordionPanel>
+            <Accordion.Title>Workflows</Accordion.Title>
+            <Accordion.Content>
+              <ListGroup className="w-100">
+                <ListGroup.Item onClick={() => alert('Profile clicked!')} active>
+                  Profile
+                </ListGroup.Item>
+                <ListGroup.Item>Settings</ListGroup.Item>
+                <ListGroup.Item>Messages</ListGroup.Item>
+                <ListGroup.Item>Download</ListGroup.Item>
+              </ListGroup>
+            </Accordion.Content>
+          </AccordionPanel>
+          <AccordionPanel>
+            <Accordion.Title>Action Properties</Accordion.Title>
+            <Accordion.Content>
+              <Button.Group>
+                <Button color="gray" disabled={!canAdd} onClick={() => addAction && addAction()}>Add</Button>
+                <Button color="gray" disabled={!canDelete} onClick={() => onDeleteAction && onDeleteAction()}>Delete</Button>
+              </Button.Group>
+              <div className="mb-6 mt-5">
+                {createPropetiesSection()}
+              </div>
+            </Accordion.Content>
+          </AccordionPanel>
+        </Accordion>
+
       </Drawer.Items>
     </Drawer>
   )
