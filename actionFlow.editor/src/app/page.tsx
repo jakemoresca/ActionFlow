@@ -3,5 +3,5 @@
 import Flow from "../components/Flow";
 
 export default async function App() {
-  return <Flow />;
+  return <Flow workflowId="" nodes={[]} edges={[]} />;
 }

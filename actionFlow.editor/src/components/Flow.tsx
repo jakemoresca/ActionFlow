@@ -18,17 +18,20 @@ import {
 
 import "@xyflow/react/dist/style.css";
 
-import { initialNodes, nodeTypes, type CustomNodeType } from "./nodes";
-import { initialEdges, edgeTypes, type CustomEdgeType } from "./edges";
+import { nodeTypes, type CustomNodeType } from "./nodes";
+import { edgeTypes, type CustomEdgeType } from "./edges";
 import ActionDrawer from "./left-pane/ActionDrawer";
 import AddActionModal from "./left-pane/AddActionModal";
 import { generateNode } from "@/modules/nodes/node-generator";
+import { Workflow } from "@/app/workflows/[id]/page";
 
-export default function App() {
+export type FlowData = Workflow;
+
+export default function App(data: FlowData) {
   const [nodes, setNodes, onNodesChange] =
-    useNodesState<CustomNodeType>(initialNodes);
+    useNodesState<CustomNodeType>(data.nodes);
   const [edges, setEdges, onEdgesChange] =
-    useEdgesState<CustomEdgeType>(initialEdges);
+    useEdgesState<CustomEdgeType>(data.edges);
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges]
