@@ -1,6 +1,6 @@
 "use client";
 
-import Flow from "../../../components/Flow";
+import Flow from "../../../components/tree/Flow";
 import { Workflow } from "./page";
 
 export default async function Workflows(workflow: Workflow) {

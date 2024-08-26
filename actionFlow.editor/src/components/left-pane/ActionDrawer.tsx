@@ -67,16 +67,16 @@ export default function ActionDrawer({
             <Accordion.Title>Workflows</Accordion.Title>
             <Accordion.Content>
               <ListGroup className="w-100">
-                <Link href="/workflows/1" passHref legacyBehavior>
+                <Link href="/workflows/1">
                   <ListGroup.Item active>Profile</ListGroup.Item>
                 </Link>
-                <Link href="/workflows/2" passHref legacyBehavior>
+                <Link href="/workflows/2">
                   <ListGroup.Item>Settings</ListGroup.Item>
                 </Link>
-                <Link href="/workflows/3" passHref legacyBehavior>
+                <Link href="/workflows/3">
                   <ListGroup.Item>Messages</ListGroup.Item>
                 </Link>
-                <Link href="/workflows/4" passHref legacyBehavior>
+                <Link href="/workflows/4">
                   <ListGroup.Item>Download</ListGroup.Item>
                 </Link>
               </ListGroup>
