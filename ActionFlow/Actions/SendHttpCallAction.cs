@@ -1,6 +1,7 @@
 ﻿using ActionFlow.Domain.Actions;
 using ActionFlow.Helpers;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace ActionFlow.Actions
 {
@@ -29,8 +30,8 @@ namespace ActionFlow.Actions
 			}
 			else if (method == "POST")
 			{
-				var bodyJson = JsonConvert.SerializeObject(body);
-				result = await apiClient.CallPost(url!, bodyJson, headers);
+                var bodyJson = JsonSerializer.Serialize(body);
+                result = await apiClient.CallPost(url!, bodyJson, headers);
 			}
 			else
 			{

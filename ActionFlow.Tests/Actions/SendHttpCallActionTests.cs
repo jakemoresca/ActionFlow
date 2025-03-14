@@ -4,6 +4,8 @@ using ActionFlow.Engine.Factories;
 using ActionFlow.Engine;
 using ActionFlow.Helpers;
 using NSubstitute;
+using FluentAssertions;
+using System.Text.Json;
 
 namespace ActionFlow.Tests.Actions
 {
@@ -48,12 +50,18 @@ namespace ActionFlow.Tests.Actions
             {
                 { "Accept", "application/json" }
             };
-            var data = "{ data: true }";
+
+            var dataValue = true;
+            var data = new Dictionary<string, object>
+            {
+                { "data", dataValue }
+            };
+            var dataJson = JsonSerializer.Serialize(data);
 
             executionContext.AddOrUpdateActionProperty(SendHttpCallAction.UrlKey, "http://httpbin.org/post");
             executionContext.AddOrUpdateActionProperty(SendHttpCallAction.MethodKey, "POST");
             executionContext.AddOrUpdateActionProperty(SendHttpCallAction.HeadersKey, headers);
-            executionContext.AddOrUpdateActionProperty(SendHttpCallAction.BodyKey, data);
+            executionContext.AddOrUpdateActionProperty(SendHttpCallAction.BodyKey, dataJson);
             executionContext.AddOrUpdateActionProperty(SendHttpCallAction.ResultVariableKey, "output");
 
             sut.SetExecutionContext(executionContext);
@@ -67,6 +75,10 @@ namespace ActionFlow.Tests.Actions
             var output = executionContext.EvaluateExpression<ApiCallResult>("output");
             Assert.AreEqual(200, output.StatusCode);
             Assert.AreEqual(headers["Accept"], output.Body["headers"]!["Accept"]!.GetValue<string>());
+
+            var jsonBody = output.Body["json"]!.ToString();
+            var outputData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBody);
+            Assert.AreEqual(dataValue, bool.Parse(outputData!["data"]!.ToString()!));
         }
     }
 }
