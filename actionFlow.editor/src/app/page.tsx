@@ -2,6 +2,6 @@
 
 import Flow from "../components/tree/Flow";
 
-export default async function App() {
-  return <Flow workflowId="" nodes={[]} edges={[]} />;
+export default function App() {
+  return <Flow workflowId="" />;
 }

@@ -24,15 +24,19 @@ import { edgeTypes, type CustomEdgeType } from "../edges";
 import ActionDrawer from "../left-pane/ActionDrawer";
 import AddActionModal from "../left-pane/AddActionModal";
 import { generateNode } from "@/modules/nodes/node-generator";
-import { Workflow } from "@/app/workflows/[id]/page";
 import { layoutElements, TreeData } from "./layout-elements";
-import { initialTree, treeRootId } from "./nodes-edges";
+import { initialTree as defaultInitialTree, treeRootId as defaultTreeRootId } from "./nodes-edges";
+import { Workflow } from '@/modules/workflows/Workflow';
 
 export type FlowData = Workflow;
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(initialTree, treeRootId, 'LR');
-
 export default function App(data: FlowData) {
+
+  const initialTree = data.tree ?? defaultInitialTree;
+  const initialTreeRootId = data.treeRootId ?? defaultTreeRootId;
+
+  const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(initialTree, initialTreeRootId, 'LR');
+
   const [nodes, setNodes, onNodesChange] =
     useNodesState<CustomNodeType>(layoutedNodes);
   const [edges, setEdges, onEdgesChange] =
@@ -88,7 +92,7 @@ export default function App(data: FlowData) {
       nodes.forEach(node => {
         const nodeTreeProperties = (node as Node).data.treeProperties as TreeData
 
-        if(node.id == selectedNode.id) {
+        if (node.id == selectedNode.id) {
           //delete updatedNodes[node.id]
         }
         else {
@@ -101,7 +105,7 @@ export default function App(data: FlowData) {
       })
     });
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, treeRootId, 'LR');
+    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, initialTreeRootId, 'LR');
 
     setEdges(layoutedEdges);
     setNodes(layoutedNodes);
@@ -120,7 +124,7 @@ export default function App(data: FlowData) {
       name: nodeToAdd.data.label as string
     }
 
-    if(hasChildren) {
+    if (hasChildren) {
       parentChildTreeProperties.children = parentTreeProperties.children;
       parentTreeProperties.children = [nodeToAdd.id]
     }
@@ -132,7 +136,7 @@ export default function App(data: FlowData) {
     nodes.forEach(node => {
       const nodeTreeProperties = (node as Node).data.treeProperties as TreeData
 
-      if(node.id == parentNode.id) {
+      if (node.id == parentNode.id) {
         updatedNodes[node.id] = {
           ...parentNode,
           data: parentNode.data,
@@ -154,7 +158,7 @@ export default function App(data: FlowData) {
       ...parentChildTreeProperties
     }
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, treeRootId, 'LR');
+    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, initialTreeRootId, 'LR');
 
     setEdges(layoutedEdges);
     setNodes(layoutedNodes);

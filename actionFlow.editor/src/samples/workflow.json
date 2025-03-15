@@ -4,7 +4,7 @@
             "id": "a",
             "type": "input",
             "position": { "x": 0, "y": 0 },
-            "data": { "label": "Event Trigger" },
+            "data": { "label": "Test Flow" },
             "deletable": false
           },
           {
