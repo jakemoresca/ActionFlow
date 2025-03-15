@@ -13,7 +13,7 @@
     "entitree-flex": "^0.4.1",
     "flowbite": "^2.4.1",
     "flowbite-react": "^0.10.1",
-    "next": "14.2.10",
+    "next": "14.2.21",
     "react": "^18",
     "react-dom": "^18",
     "uuid": "^10.0.0"
