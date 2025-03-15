@@ -1,7 +1,7 @@
 "use client";
 
-import Flow from "../components/Flow";
+import Flow from "../components/tree/Flow";
 
 export default async function App() {
-  return <Flow />;
+  return <Flow workflowId="" nodes={[]} edges={[]} />;
 }
