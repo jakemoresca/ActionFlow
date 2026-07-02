@@ -71,7 +71,9 @@ export default function TableProperties({ properties, columnDefinitions, handleP
     <div className="overflow-x-auto mt-3">
       <Table striped>
         <TableHead>
-          { createTableHeaderCells() }
+          <TableRow>
+            { createTableHeaderCells() }
+          </TableRow>
         </TableHead>
         <TableBody className="divide-y">
           {createTableRows()}
