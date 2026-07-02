@@ -12,7 +12,7 @@ namespace ActionFlow.Tests.Helpers
         {
             //Arrange
             var httpClientFactory = Substitute.For<IHttpClientFactory>();
-            httpClientFactory.CreateClient().Returns(new HttpClient());
+            httpClientFactory.CreateClient().Returns(new HttpClient(new EchoHttpMessageHandler()));
             var url = "http://httpbin.org/get";
 
             var sut = new ApiClient(httpClientFactory);
@@ -30,7 +30,7 @@ namespace ActionFlow.Tests.Helpers
         {
             //Arrange
             var httpClientFactory = Substitute.For<IHttpClientFactory>();
-            httpClientFactory.CreateClient().Returns(new HttpClient());
+            httpClientFactory.CreateClient().Returns(new HttpClient(new EchoHttpMessageHandler()));
 
             var url = "http://httpbin.org/post";
             var data = "{ data: true }";

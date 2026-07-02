@@ -36,7 +36,7 @@ export default function NodeProperties({ node }: NodePropertiesData) {
       const field = (
         <div key={`node_${node.id}_${propertyDefinition.propertyName}_${propertyDefinition.index}`}>
           <div className="mb-2 block">
-            <Label value={propertyDefinition.propertyLabel} />
+            <Label>{propertyDefinition.propertyLabel}</Label>
           </div>
           <PropertyField
             nodeType={node.type!}
