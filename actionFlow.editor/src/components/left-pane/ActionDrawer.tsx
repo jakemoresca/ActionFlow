@@ -1,10 +1,15 @@
 import {
   Drawer,
+  DrawerHeader,
+  DrawerItems,
   Button,
-  Label,
+  ButtonGroup,
   Accordion,
   AccordionPanel,
+  AccordionTitle,
+  AccordionContent,
   ListGroup,
+  ListGroupItem,
 } from "flowbite-react";
 import { Node } from "@xyflow/react";
 import NodeProperties from "./NodeProperties";
@@ -60,32 +65,32 @@ export default function ActionDrawer({
 
   return (
     <Drawer open={true} onClose={() => {}} backdrop={false}>
-      <Drawer.Header title="Action Flow Editor" />
-      <Drawer.Items>
+      <DrawerHeader title="Action Flow Editor" />
+      <DrawerItems>
         <Accordion>
           <AccordionPanel>
-            <Accordion.Title>Workflows</Accordion.Title>
-            <Accordion.Content>
+            <AccordionTitle>Workflows</AccordionTitle>
+            <AccordionContent>
               <ListGroup className="w-100">
                 <Link href="/workflows/1">
-                  <ListGroup.Item active>Profile</ListGroup.Item>
+                  <ListGroupItem active>Profile</ListGroupItem>
                 </Link>
                 <Link href="/workflows/2">
-                  <ListGroup.Item>Settings</ListGroup.Item>
+                  <ListGroupItem>Settings</ListGroupItem>
                 </Link>
                 <Link href="/workflows/3">
-                  <ListGroup.Item>Messages</ListGroup.Item>
+                  <ListGroupItem>Messages</ListGroupItem>
                 </Link>
                 <Link href="/workflows/4">
-                  <ListGroup.Item>Download</ListGroup.Item>
+                  <ListGroupItem>Download</ListGroupItem>
                 </Link>
               </ListGroup>
-            </Accordion.Content>
+            </AccordionContent>
           </AccordionPanel>
           <AccordionPanel>
-            <Accordion.Title>Action Properties</Accordion.Title>
-            <Accordion.Content>
-              <Button.Group>
+            <AccordionTitle>Action Properties</AccordionTitle>
+            <AccordionContent>
+              <ButtonGroup>
                 <Button
                   color="gray"
                   disabled={!canAdd}
@@ -100,12 +105,12 @@ export default function ActionDrawer({
                 >
                   Delete
                 </Button>
-              </Button.Group>
+              </ButtonGroup>
               <div className="mb-6 mt-5">{createPropetiesSection()}</div>
-            </Accordion.Content>
+            </AccordionContent>
           </AccordionPanel>
         </Accordion>
-      </Drawer.Items>
+      </DrawerItems>
     </Drawer>
   );
 }

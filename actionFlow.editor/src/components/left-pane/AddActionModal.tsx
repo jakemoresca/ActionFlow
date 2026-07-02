@@ -1,4 +1,4 @@
-import { Modal } from "flowbite-react";
+import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { NodeTypeKeys } from "../nodes";
 
 export type AddActionModalData = {
@@ -59,8 +59,8 @@ export default function AddActionModal({
       onClose={() => onCloseModal && onCloseModal()}
       popup
     >
-      <Modal.Header />
-      <Modal.Body>
+      <ModalHeader />
+      <ModalBody>
         <h3 className="text-xl font-medium text-gray-900 dark:text-white">
           Add Action
         </h3>
@@ -82,7 +82,7 @@ export default function AddActionModal({
             );
           })}
         </div>
-      </Modal.Body>
+      </ModalBody>
     </Modal>
   );
 }

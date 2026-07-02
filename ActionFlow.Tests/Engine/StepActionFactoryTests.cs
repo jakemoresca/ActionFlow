@@ -93,7 +93,6 @@ namespace ActionFlow.Tests.Engine
         }
 
         [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException), "Action with name: test does not exist")]
         public void When_getting_non_existing_action_it_should_throw_exception()
         {
             //Arrange
@@ -102,10 +101,10 @@ namespace ActionFlow.Tests.Engine
             var actionName = "test";
 
             //Act
-            var result = sut.Get(actionName);
+            var exception = Assert.ThrowsExactly<KeyNotFoundException>(() => sut.Get(actionName));
 
             //Assert
-            Assert.IsNotNull(result);
+            Assert.AreEqual("Action with name: test does not exist", exception.Message);
         }
 
         [TestMethod]

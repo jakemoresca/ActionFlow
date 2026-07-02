@@ -58,7 +58,7 @@ public class WorkflowProviderBuiltinExtensionsTests
 		};
 
 		var services = new ServiceCollection();
-		var path = Path.Combine(Environment.CurrentDirectory, @"Providers\workflows.json");
+		var path = Path.Combine(Environment.CurrentDirectory, "Providers", "workflows.json");
 		services.AddJsonWorkflowProvider(path);
 
 		//Act

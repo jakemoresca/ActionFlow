@@ -29,10 +29,7 @@ export default function PropertyField({
   switch (propertyDefinition.propertyType) {
     case NodePropertyType.Label:
       return (
-        <Label
-          htmlFor="label"
-          value={value}
-        />
+        <Label htmlFor="label">{value}</Label>
       );
 
     case NodePropertyType.TextField:

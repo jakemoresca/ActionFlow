@@ -1,4 +1,4 @@
-import { Table, TextInput } from "flowbite-react";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from "flowbite-react";
 import { ChangeEvent } from "react";
 import PropertyField from "./property-field";
 import { NodePropertyDefinition, NodePropertyType } from "../left-pane/NodeProperties";
@@ -6,7 +6,7 @@ import { NodePropertyDefinition, NodePropertyType } from "../left-pane/NodePrope
 export type TablePropertiesData = {
   properties?: Record<string, string>[];
   columnDefinitions: TablePropertiesColumnDefinition[]
-  handlePropertyChange?: (event: ChangeEvent<HTMLInputElement>) => void
+  handlePropertyChange?: (event: ChangeEvent) => void
 };
 
 export type TablePropertiesColumnDefinition = {
@@ -27,7 +27,7 @@ export default function TableProperties({ properties, columnDefinitions, handleP
       const columnDefinition = columnDefinitions.find(x => x.index == index);
 
       if (columnDefinition) {
-        headerCells.push(<Table.HeadCell key={`properties_headcell_${index}`}>{columnDefinition.name}</Table.HeadCell>)
+        headerCells.push(<TableHeadCell key={`properties_headcell_${index}`}>{columnDefinition.name}</TableHeadCell>)
       }
     }
 
@@ -48,7 +48,7 @@ export default function TableProperties({ properties, columnDefinitions, handleP
       }
 
       const key = `row_${rowIndex}`;
-      return (<Table.Row key={key} className="bg-white dark:border-gray-700 dark:bg-gray-800">{tableCells}</Table.Row>)
+      return (<TableRow key={key} className="bg-white dark:border-gray-700 dark:bg-gray-800">{tableCells}</TableRow>)
     });
 
     return tableRows;
@@ -64,18 +64,18 @@ export default function TableProperties({ properties, columnDefinitions, handleP
       index: rowIndex
     }
 
-    return (<Table.Cell key={key}><PropertyField nodeType="" properties={property} propertyDefinition={propertyDefinition} handlePropertyChange={handlePropertyChange} /></Table.Cell>)
+    return (<TableCell key={key}><PropertyField nodeType="" properties={property} propertyDefinition={propertyDefinition} handlePropertyChange={handlePropertyChange} /></TableCell>)
   }
 
   return (
     <div className="overflow-x-auto mt-3">
       <Table striped>
-        <Table.Head>
+        <TableHead>
           { createTableHeaderCells() }
-        </Table.Head>
-        <Table.Body className="divide-y">
+        </TableHead>
+        <TableBody className="divide-y">
           {createTableRows()}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   );

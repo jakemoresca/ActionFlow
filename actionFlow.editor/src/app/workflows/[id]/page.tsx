@@ -6,10 +6,12 @@ export type WorkflowsParam = {
 };
 
 export default async function Workflows({ params }: {
-  params: WorkflowsParam;
+  params: Promise<WorkflowsParam>;
 }) {
+  const { id } = await params;
+
   const workflow: Workflow = {
-    workflowId: params.id,
+    workflowId: id,
     tree: {
       a: {
         id: "a",

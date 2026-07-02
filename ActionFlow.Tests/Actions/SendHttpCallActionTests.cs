@@ -3,6 +3,7 @@ using ActionFlow.Domain.Actions;
 using ActionFlow.Engine.Factories;
 using ActionFlow.Engine;
 using ActionFlow.Helpers;
+using ActionFlow.Tests.Helpers;
 using NSubstitute;
 using FluentAssertions;
 using System.Text.Json;
@@ -17,7 +18,7 @@ namespace ActionFlow.Tests.Actions
         {
             //Arrange
             var httpClientFactory = Substitute.For<IHttpClientFactory>();
-            httpClientFactory.CreateClient().Returns(new HttpClient());
+            httpClientFactory.CreateClient().Returns(new HttpClient(new EchoHttpMessageHandler()));
             var sut = new SendHttpCallAction(new ApiClient(httpClientFactory));
             var executionContext = ExecutionContext;
 
@@ -42,7 +43,7 @@ namespace ActionFlow.Tests.Actions
         {
             //Arrange
             var httpClientFactory = Substitute.For<IHttpClientFactory>();
-            httpClientFactory.CreateClient().Returns(new HttpClient());
+            httpClientFactory.CreateClient().Returns(new HttpClient(new EchoHttpMessageHandler()));
             var sut = new SendHttpCallAction(new ApiClient(httpClientFactory));
             var executionContext = ExecutionContext;
 

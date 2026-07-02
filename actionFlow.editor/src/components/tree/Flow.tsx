@@ -121,15 +121,15 @@ export default function App(data: FlowData) {
     const parentChildTreeProperties: TreeData = {
       id: nodeToAdd.id,
       type: nodeToAdd.type!,
-      name: nodeToAdd.data.label as string
+      name: nodeToAdd.data.label as string,
+      ...(hasChildren ? { children: parentTreeProperties.children } : {})
     }
 
-    if (hasChildren) {
-      parentChildTreeProperties.children = parentTreeProperties.children;
-      parentTreeProperties.children = [nodeToAdd.id]
-    }
-    else {
-      parentTreeProperties.children = [nodeToAdd.id];
+    // Build a new tree-properties object instead of mutating the one derived
+    // from state (selectedNodes). The new node becomes the parent's only child.
+    const updatedParentTreeProperties: TreeData = {
+      ...parentTreeProperties,
+      children: [nodeToAdd.id],
     }
 
     const updatedNodes: Record<string | number, TreeData> = {};
@@ -140,7 +140,7 @@ export default function App(data: FlowData) {
         updatedNodes[node.id] = {
           ...parentNode,
           data: parentNode.data,
-          ...parentTreeProperties
+          ...updatedParentTreeProperties
         };
       }
       else {
