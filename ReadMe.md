@@ -15,6 +15,8 @@ The idea is it will contain bunch of interfaces (and a way to provide one) that 
 4. ActionFlow.API - (not yet created). Exposes endpoints for interacting with Workflows (either action execution, designing, debugging)
 5. ActionFlow.DB - Is a document store that will be used by a DocumentStoreProvider inherited from IWorkflowProvider which is the workflow provider of the ActionFlow Engine. This will be the default provider of ActionFlow.Runner 
 
+> **Implementation plan for Components 3, 4 & 5:** see [docs/microservices-plan.md](docs/microservices-plan.md) — a broker-based (Kafka), SAGA-coordinated microservice design using MartenDB (Marten + Wolverine).
+
 
 ## How to use
 Action Flow is currently on it's infancy stage. But in the future it will offer a way to be used as a Class Library or as an API with a visual Action Flow editor.

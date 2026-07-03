@@ -23,4 +23,35 @@ public class WorkflowProviderTests
 		Assert.IsInstanceOfType(result, typeof(List<Workflow>));
 		Assert.IsTrue(result.Contains(testWorkflows[0]));
 	}
+
+	[TestMethod]
+	public async Task GetWorkflowAsync_default_implementation_resolves_by_name()
+	{
+		//Arrange
+		var testWorkflows = new List<Workflow>
+		{
+			new("first", []),
+			new("second", [])
+		};
+		IWorkflowProvider sut = new WorkflowProvider(testWorkflows);
+
+		//Act
+		var result = await sut.GetWorkflowAsync("second");
+
+		//Assert
+		Assert.AreSame(testWorkflows[1], result);
+	}
+
+	[TestMethod]
+	public async Task GetWorkflowAsync_default_implementation_returns_null_for_unknown_name()
+	{
+		//Arrange
+		IWorkflowProvider sut = new WorkflowProvider([new("first", [])]);
+
+		//Act
+		var result = await sut.GetWorkflowAsync("missing");
+
+		//Assert
+		Assert.IsNull(result);
+	}
 }

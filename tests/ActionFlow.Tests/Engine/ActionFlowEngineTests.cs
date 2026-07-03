@@ -16,7 +16,8 @@ namespace ActionFlow.Tests.Engine
             //Arrange
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             var workflows = CreateFakeWorkflows();
-            workflowProvider.GetAllWorkflows().Returns(workflows);
+            workflowProvider.GetWorkflowAsync("Test Workflow Rule 1", Arg.Any<CancellationToken>())
+                .Returns(workflows[0]);
 
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
@@ -41,7 +42,8 @@ namespace ActionFlow.Tests.Engine
             //Arrange
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             var workflows = CreateFakeWorkflowsWithOutput();
-            workflowProvider.GetAllWorkflows().Returns(workflows);
+            workflowProvider.GetWorkflowAsync("Test Workflow Rule 1", Arg.Any<CancellationToken>())
+                .Returns(workflows[0]);
 
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();

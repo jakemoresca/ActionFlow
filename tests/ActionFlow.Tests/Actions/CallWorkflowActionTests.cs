@@ -17,7 +17,8 @@ namespace ActionFlow.Tests.Actions
             //Arrange
             var workflowProvider = Substitute.For<IWorkflowProvider>();
             var workflows = CreateFakeWorkflowsWithOutput();
-            workflowProvider.GetAllWorkflows().Returns(workflows);
+            workflowProvider.GetWorkflowAsync("Test Workflow Rule 2", Arg.Any<CancellationToken>())
+                .Returns(workflows[0]);
 
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("Variable").Returns(new SetVariableAction());

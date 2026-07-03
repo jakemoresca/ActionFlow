@@ -6,7 +6,7 @@ namespace ActionFlow.Engine
 {
 	public class ActionFlowEngine(IWorkflowProvider workflowProvider, IStepActionFactory stepActionFactory, IStepExecutionEvaluator stepExecutionEvaluator) : IActionFlowEngine
 	{
-		private Dictionary<string, Workflow> _workflows = [];
+		private readonly Dictionary<string, Workflow> _workflows = [];
 
 		public IStepActionFactory GetActionFactory() => stepActionFactory;
 		public IStepExecutionEvaluator GetStepExecutionEvaluator() => stepExecutionEvaluator;
@@ -31,7 +31,7 @@ namespace ActionFlow.Engine
 		/// <returns>List of rule results</returns>
 		public async ValueTask<ActionFlowEngineResult> ExecuteWorkflowAsync(string workflowName, ExecutionContext executionContext)
 		{
-			var workflow = GetWorkflow(workflowName);
+			var workflow = await GetWorkflowAsync(workflowName);
 			var updatedExecutionContext = executionContext;
 
 			foreach (var step in workflow.Steps)
@@ -49,14 +49,40 @@ namespace ActionFlow.Engine
 			return await Task.FromResult(result);
 		}
 
-		private Workflow GetWorkflow(string name)
+		/// <summary>
+		/// Resolves a workflow by name, lazily loading it from the provider and caching it.
+		/// Unknown names surface as <see cref="KeyNotFoundException"/> to preserve the previous
+		/// dictionary-indexing behavior.
+		/// </summary>
+		private async ValueTask<Workflow> GetWorkflowAsync(string name, CancellationToken cancellationToken = default)
 		{
-			if (_workflows.Count == 0)
+			if (_workflows.TryGetValue(name, out var cached))
 			{
-				_workflows = workflowProvider.GetAllWorkflows().ToDictionary(x => x.WorkflowName, x => x);
+				return cached;
 			}
 
-			return _workflows[name];
+			var workflow = await workflowProvider.GetWorkflowAsync(name, cancellationToken)
+				?? throw new KeyNotFoundException($"Workflow '{name}' was not found.");
+
+			_workflows[name] = workflow;
+			return workflow;
+		}
+
+		/// <summary>
+		/// Evicts a workflow from the in-memory cache so the next execution reloads it from the
+		/// provider. Used for event-driven cache invalidation (e.g. on <c>WorkflowPublished</c>).
+		/// Pass <c>null</c> to clear the whole cache.
+		/// </summary>
+		public void InvalidateWorkflow(string? name = null)
+		{
+			if (name is null)
+			{
+				_workflows.Clear();
+			}
+			else
+			{
+				_workflows.Remove(name);
+			}
 		}
 
 		private ExecutionContext BuildExecutionContext(params Parameter[] inputs)
