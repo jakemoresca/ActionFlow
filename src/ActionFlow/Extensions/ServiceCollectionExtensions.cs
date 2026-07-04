@@ -1,6 +1,7 @@
 ﻿using ActionFlow.Actions;
 using ActionFlow.Engine;
 using ActionFlow.Engine.Factories;
+using ActionFlow.Engine.Observers;
 using ActionFlow.Engine.Providers;
 using ActionFlow.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,9 @@ namespace ActionFlow.Extensions
 			services.AddScoped<IWorkflowProvider, BlankWorkflowProvider>();
 			services.AddScoped<IStepExecutionEvaluator, StepExecutionEvaluator>();
 			services.AddScoped<IStepActionFactory, StepActionFactory>();
+
+			// No-op by default; a host (e.g. ActionFlow.Runner) can replace this to emit step events.
+			services.AddSingleton<IStepExecutionObserver>(NullStepExecutionObserver.Instance);
 			services.AddScoped<IApiClient, ApiClient>();
 			services.AddHttpClient();
 

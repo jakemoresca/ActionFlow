@@ -13,7 +13,7 @@ namespace ActionFlow.Tests.Actions
 		{
 			//Arrange
 			var sut = new ControlFlowAction();
-			var stepExecutionEvaluator = new StepExecutionEvaluator();
+			var stepExecutionEvaluator = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 			ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
 			var executionContext = ExecutionContext;
 
@@ -35,7 +35,7 @@ namespace ActionFlow.Tests.Actions
 		{
 			//Arrange
 			var sut = new ControlFlowAction();
-			var stepExecutionEvaluator = new StepExecutionEvaluator();
+			var stepExecutionEvaluator = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 			ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
 			var executionContext = ExecutionContext;
 

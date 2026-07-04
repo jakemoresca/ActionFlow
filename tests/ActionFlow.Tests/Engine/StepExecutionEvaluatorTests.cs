@@ -29,7 +29,7 @@ namespace ActionFlow.Tests.Engine
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("action").Returns(action);
 
-            var sut = new StepExecutionEvaluator();
+            var sut = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 
             //Act
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
@@ -56,7 +56,7 @@ namespace ActionFlow.Tests.Engine
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("action").Returns(action);
 
-            var sut = new StepExecutionEvaluator();
+            var sut = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 
             //Act
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);
@@ -89,7 +89,7 @@ namespace ActionFlow.Tests.Engine
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("action").Returns(action);
 
-            var sut = new StepExecutionEvaluator();
+            var sut = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 
             //Act
             await sut.EvaluateAndRunStep(step, executionContext, stepActionFactory);

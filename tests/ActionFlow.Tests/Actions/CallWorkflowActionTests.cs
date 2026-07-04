@@ -23,7 +23,7 @@ namespace ActionFlow.Tests.Actions
             var stepActionFactory = Substitute.For<IStepActionFactory>();
             stepActionFactory.Get("Variable").Returns(new SetVariableAction());
 
-            var stepExecutionEvaluator = new StepExecutionEvaluator();
+            var stepExecutionEvaluator = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
             var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
 
             var sut = new CallWorkflowAction();

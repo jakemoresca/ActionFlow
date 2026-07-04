@@ -34,9 +34,12 @@ namespace ActionFlow.Engine
 			var workflow = await GetWorkflowAsync(workflowName);
 			var updatedExecutionContext = executionContext;
 
-			foreach (var step in workflow.Steps)
+			for (var index = 0; index < workflow.Steps.Count; index++)
 			{
-				updatedExecutionContext = await stepExecutionEvaluator.EvaluateAndRunStep(step, updatedExecutionContext, stepActionFactory);
+				updatedExecutionContext.CurrentStepIndex = index;
+				// EvaluateAndRunStep returns the same context instance; fall back to it defensively.
+				updatedExecutionContext = await stepExecutionEvaluator.EvaluateAndRunStep(workflow.Steps[index], updatedExecutionContext, stepActionFactory)
+					?? updatedExecutionContext;
 			}
 
 			var result = new ActionFlowEngineResult();

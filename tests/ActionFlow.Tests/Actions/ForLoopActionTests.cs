@@ -12,7 +12,7 @@ namespace ActionFlow.Tests.Actions
 		public async Task When_executing_it_should_repeat_steps_3_times()
 		{
 			//Arrange
-			var stepExecutionEvaluator = new StepExecutionEvaluator();
+			var stepExecutionEvaluator = new StepExecutionEvaluator(ActionFlow.Engine.Observers.NullStepExecutionObserver.Instance);
 			ActionFlowEngine.GetStepExecutionEvaluator().Returns(stepExecutionEvaluator);
 
 			var sut = new ForLoopAction();

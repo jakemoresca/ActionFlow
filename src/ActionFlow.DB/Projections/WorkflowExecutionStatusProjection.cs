@@ -8,7 +8,7 @@ namespace ActionFlow.DB.Projections;
 /// Single-stream projection folding an execution's event stream into a <see cref="WorkflowExecutionStatus"/>.
 /// The stream is keyed by <c>ExecutionId</c>. Registered async so it can be rebuilt from history.
 /// </summary>
-public class WorkflowExecutionStatusProjection : SingleStreamProjection<WorkflowExecutionStatus, Guid>
+public partial class WorkflowExecutionStatusProjection : SingleStreamProjection<WorkflowExecutionStatus, Guid>
 {
     public static WorkflowExecutionStatus Create(WorkflowExecutionRequested @event) => new()
     {

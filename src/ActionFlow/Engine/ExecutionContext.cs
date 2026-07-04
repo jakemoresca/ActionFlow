@@ -16,6 +16,15 @@ namespace ActionFlow.Engine
 
         private Dictionary<string, object> _actionProperties { get; }
 
+        /// <summary>
+        /// Correlation id for the running execution. Set by a host (e.g. ActionFlow.Runner) so the
+        /// step observer can tag emitted events. Null for standalone/library executions.
+        /// </summary>
+        public Guid? ExecutionId { get; set; }
+
+        /// <summary>Zero-based index of the step currently being evaluated; -1 before the first step.</summary>
+        public int CurrentStepIndex { get; set; } = -1;
+
         public IActionFlowEngine GetCurrentEngine() => _actionFlowEngine;
 
         public void AddOrUpdateParameter(Domain.Engine.Parameter parameter)
