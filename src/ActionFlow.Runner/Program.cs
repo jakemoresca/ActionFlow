@@ -18,9 +18,14 @@ using Wolverine.Marten;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-var postgres = builder.Configuration.GetConnectionString("Postgres")
+// Aspire service defaults: OpenTelemetry (to the dashboard), health checks, service discovery.
+builder.AddServiceDefaults();
+
+// Connection strings are injected by the Aspire AppHost (ConnectionStrings__actionflow / __kafka);
+// the fallbacks let the Runner also run standalone against deploy/docker-compose.yml.
+var postgres = builder.Configuration.GetConnectionString("actionflow")
     ?? "Host=localhost;Port=5432;Database=actionflow;Username=actionflow;Password=actionflow";
-var kafka = builder.Configuration.GetConnectionString("Kafka") ?? "localhost:9092";
+var kafka = builder.Configuration.GetConnectionString("kafka") ?? "localhost:9092";
 
 // Core ActionFlow engine + default actions (BlankWorkflowProvider + no-op observer are overridden below).
 builder.Services.UseActionFlowEngine();

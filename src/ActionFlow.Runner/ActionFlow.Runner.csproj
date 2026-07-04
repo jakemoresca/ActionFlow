@@ -28,6 +28,7 @@
     <ProjectReference Include="..\ActionFlow\ActionFlow.csproj" />
     <ProjectReference Include="..\ActionFlow.Contracts\ActionFlow.Contracts.csproj" />
     <ProjectReference Include="..\ActionFlow.DB\ActionFlow.DB.csproj" />
+    <ProjectReference Include="..\ActionFlow.ServiceDefaults\ActionFlow.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

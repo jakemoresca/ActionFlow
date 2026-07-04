@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/ActionFlow.AppHost/ActionFlow.AppHost.csproj" />
     <Project Path="src/ActionFlow.Contracts/ActionFlow.Contracts.csproj" />
     <Project Path="src/ActionFlow.DB/ActionFlow.DB.csproj" />
     <Project Path="src/ActionFlow.Runner/ActionFlow.Runner.csproj" />
+    <Project Path="src/ActionFlow.ServiceDefaults/ActionFlow.ServiceDefaults.csproj" />
     <Project Path="src/ActionFlow/ActionFlow.csproj" />
   </Folder>
   <Folder Name="/tests/">
