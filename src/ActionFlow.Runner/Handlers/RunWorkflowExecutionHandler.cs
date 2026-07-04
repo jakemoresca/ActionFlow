@@ -1,6 +1,7 @@
 using ActionFlow.Contracts;
 using ActionFlow.Domain.Engine;
 using ActionFlow.Engine;
+using ActionFlow.Runner.Sagas;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 using ExecutionContext = ActionFlow.Engine.ExecutionContext;
@@ -8,24 +9,23 @@ using ExecutionContext = ActionFlow.Engine.ExecutionContext;
 namespace ActionFlow.Runner.Handlers;
 
 /// <summary>
-/// Consumes <see cref="ExecuteWorkflow"/>: runs the workflow on the hosted engine and emits execution
-/// events. Step-level events are emitted by <see cref="Observers.MessagingStepObserver"/>; this handler
-/// emits the started/terminal events. (No saga yet — that arrives in Phase 3.)
+/// Runs a workflow on the hosted engine in response to the saga's <see cref="RunWorkflowExecution"/>
+/// command, emitting the per-step <see cref="StepCompleted"/> events (buffered by
+/// <see cref="Observers.BufferingStepObserver"/>) and the terminal
+/// <see cref="WorkflowExecutionCompleted"/>/<see cref="WorkflowExecutionFailed"/> event. Those events
+/// carry the saga id (stamped by Wolverine on this handler's context) so they route back to the saga.
+/// The <see cref="WorkflowExecutionStarted"/> event is owned by the saga's start.
 /// </summary>
-public class ExecuteWorkflowHandler
+public class RunWorkflowExecutionHandler
 {
     public async Task Handle(
-        ExecuteWorkflow command,
+        RunWorkflowExecution command,
         IActionFlowEngine engine,
         ExecutionEventBuffer stepEvents,
         IMessageBus bus,
-        ILogger<ExecuteWorkflowHandler> logger)
+        ILogger<RunWorkflowExecutionHandler> logger)
     {
         var delivery = new DeliveryOptions { PartitionKey = command.ExecutionId.ToString() };
-
-        await bus.PublishAsync(
-            new WorkflowExecutionStarted { ExecutionId = command.ExecutionId, StartedAt = DateTimeOffset.UtcNow },
-            delivery);
 
         // Build the context ourselves (rather than the params overload) so we can attach the
         // ExecutionId that the step observer tags its events with.
@@ -40,7 +40,8 @@ public class ExecuteWorkflowHandler
             var result = await engine.ExecuteWorkflowAsync(command.WorkflowName, executionContext);
 
             // Publish the buffered per-step events, then the terminal event, all via this handler's
-            // context so they share one outbox and stay ordered ahead of the completion event.
+            // context so they share one outbox, keep the ExecutionId partition key, and stay ordered
+            // ahead of the completion event.
             await PublishStepEventsAsync(stepEvents, bus, delivery);
 
             var outputs = result.OutputParameters
@@ -70,7 +71,7 @@ public class ExecuteWorkflowHandler
             logger.LogError(exception, "Workflow {Workflow} execution {ExecutionId} failed at step index {Index}",
                 command.WorkflowName, command.ExecutionId, executionContext.CurrentStepIndex);
 
-            // Deliberately not rethrown: coarse retry/DLQ and saga-driven compensation land in Phase 3.
+            // Not rethrown: the saga observes WorkflowExecutionFailed and drives compensation.
         }
     }
 
