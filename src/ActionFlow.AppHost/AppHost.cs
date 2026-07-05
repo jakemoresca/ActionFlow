@@ -20,4 +20,19 @@ builder.AddProject<Projects.ActionFlow_Runner>("runner")
     .WithReference(actionflowDb).WaitFor(actionflowDb)
     .WithReference(kafka).WaitFor(kafka);
 
+// Component 4 — the HTTP API / editor backend. The "http" launch profile defines its http endpoint.
+var api = builder.AddProject<Projects.ActionFlow_API>("api", "http")
+    .WithReference(actionflowDb).WaitFor(actionflowDb)
+    .WithReference(kafka).WaitFor(kafka)
+    .WithExternalHttpEndpoints();
+
+// Component 2 — the Next.js visual editor. Runs `npm run dev`; Aspire assigns its port via PORT and
+// passes the API base URL through so the editor can call it once wired up. It is not gated on API
+// health (a frontend should start and surface errors rather than block on the backend).
+builder.AddJavaScriptApp("editor", "../../actionFlow.editor")
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .WithReference(api)
+    .WithEnvironment("NEXT_PUBLIC_ACTIONFLOW_API", api.GetEndpoint("http"));
+
 builder.Build().Run();

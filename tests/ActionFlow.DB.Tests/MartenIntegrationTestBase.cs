@@ -38,6 +38,7 @@ public abstract class MartenIntegrationTestBase
             options.Connection(_postgres!.GetConnectionString());
             options.UseSystemTextJsonForSerialization();
             options.ConfigureActionFlowStore();
+            options.AddExecutionStatusProjection();
         });
     }
 

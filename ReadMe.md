@@ -1,5 +1,5 @@
 # Action Flow
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rydersir_action-flow&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rydersir_action-flow)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jakemoresca_ActionFlow&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jakemoresca_ActionFlow)
 
 ## Overview
 Action Flow is a workflow engine that can be used to abstract, customize business rules, or add integration to an existing API.

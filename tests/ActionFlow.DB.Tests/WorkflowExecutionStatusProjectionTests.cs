@@ -1,7 +1,6 @@
 using ActionFlow.Contracts;
 using ActionFlow.DB.ReadModels;
 using FluentAssertions;
-using JasperFx.Events.Daemon;
 using Marten;
 
 namespace ActionFlow.DB.Tests;
@@ -10,7 +9,7 @@ namespace ActionFlow.DB.Tests;
 public class WorkflowExecutionStatusProjectionTests : MartenIntegrationTestBase
 {
     [TestMethod]
-    public async Task Rebuilding_the_projection_folds_the_execution_stream_into_a_status()
+    public async Task The_inline_projection_folds_the_execution_stream_into_a_status()
     {
         var executionId = Guid.NewGuid();
 
@@ -34,12 +33,9 @@ public class WorkflowExecutionStatusProjectionTests : MartenIntegrationTestBase
                     OutputParameters = new Dictionary<string, string> { ["canVote"] = "true" }
                 });
 
+            // Inline projection: the read model is built as part of this commit.
             await session.SaveChangesAsync();
         }
-
-        // Exercise the "projection rebuild" exit criterion explicitly.
-        using var daemon = await Store.BuildProjectionDaemonAsync();
-        await daemon.RebuildProjectionAsync<WorkflowExecutionStatus>(CancellationToken.None);
 
         await using var query = Store.QuerySession();
         var status = await query.LoadAsync<WorkflowExecutionStatus>(executionId);

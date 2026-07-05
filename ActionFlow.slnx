@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/ActionFlow.API/ActionFlow.API.csproj" />
     <Project Path="src/ActionFlow.AppHost/ActionFlow.AppHost.csproj" />
     <Project Path="src/ActionFlow.Contracts/ActionFlow.Contracts.csproj" />
     <Project Path="src/ActionFlow.DB/ActionFlow.DB.csproj" />
@@ -8,6 +9,7 @@
     <Project Path="src/ActionFlow/ActionFlow.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/ActionFlow.Api.Tests/ActionFlow.Api.Tests.csproj" />
     <Project Path="tests/ActionFlow.DB.Tests/ActionFlow.DB.Tests.csproj" />
     <Project Path="tests/ActionFlow.Runner.Tests/ActionFlow.Runner.Tests.csproj" />
     <Project Path="tests/ActionFlow.Tests/ActionFlow.Tests.csproj" />

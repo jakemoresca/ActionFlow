@@ -16,10 +16,12 @@
     <PackageReference Include="Aspire.Hosting.AppHost" Version="13.4.6" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
     <PackageReference Include="Aspire.Hosting.Kafka" Version="13.4.6" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.4.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ActionFlow.Runner\ActionFlow.Runner.csproj" />
+    <ProjectReference Include="..\ActionFlow.API\ActionFlow.API.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,6 @@ using ActionFlow.Extensions;
 using ActionFlow.Runner;
 using ActionFlow.Runner.Observers;
 using ActionFlow.Runner.Registry;
-using JasperFx.Events.Daemon;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,15 +29,17 @@ var kafka = builder.Configuration.GetConnectionString("kafka") ?? "localhost:909
 // Core ActionFlow engine + default actions (BlankWorkflowProvider + no-op observer are overridden below).
 builder.Services.UseActionFlowEngine();
 
-// Marten store (shared ActionFlow config) + Wolverine transactional outbox + async projection daemon.
+// Marten store + Wolverine transactional outbox. The Runner owns its schema (saga state, outbox);
+// workflow definitions live in the shared schema so the API's writes are visible here. No read-side
+// projection lives in the Runner, so no Marten async daemon is needed.
 builder.Services.AddMarten(options =>
 {
     options.Connection(postgres);
+    options.DatabaseSchemaName = "actionflow_runner";
     options.UseSystemTextJsonForSerialization();
     options.ConfigureActionFlowStore();
 })
-.IntegrateWithWolverine()
-.AddAsyncDaemon(DaemonMode.HotCold);
+.IntegrateWithWolverine();
 
 // Marten-backed workflow provider (D4) — replaces the BlankWorkflowProvider (explicit RemoveAll,
 // since Wolverine's container does not honor last-registration-wins).
@@ -57,6 +58,7 @@ builder.Services.AddScoped<IActionRegistry, ActionRegistry>();
 
 builder.UseWolverine(opts =>
 {
+    opts.UseRuntimeCompilation();
     opts.UseKafka(kafka).AutoProvision();
 
     // Inbound: execution commands and workflow lifecycle events.

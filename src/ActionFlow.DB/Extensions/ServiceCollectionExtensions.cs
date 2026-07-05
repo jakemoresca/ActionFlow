@@ -5,41 +5,36 @@ using ActionFlow.Engine.Providers;
 using JasperFx.Events.Projections;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-using Weasel.Core;
 
 namespace ActionFlow.DB.Extensions;
 
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Configures Marten (document store + event store + execution projection) for ActionFlow and
-    /// registers the <see cref="DocumentStoreWorkflowProvider"/> as the <see cref="IWorkflowProvider"/>.
+    /// PostgreSQL schema that holds the shared <see cref="WorkflowDocument"/> table. Placing workflow
+    /// definitions in a dedicated schema (separate from each service's default schema) lets the API
+    /// own writes while the Runner reads them, without the two services sharing their Wolverine
+    /// transport / saga / projection tables.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="connectionString">PostgreSQL connection string.</param>
-    /// <param name="registerAsWorkflowProvider">
-    /// When true (default) registers the Marten-backed provider as the engine's <see cref="IWorkflowProvider"/>.
-    /// </param>
-    /// <param name="configure">Optional hook to further customize Marten's <see cref="StoreOptions"/>.</param>
+    public const string WorkflowSchemaName = "actionflow_workflows";
+
+    /// <summary>
+    /// One-call setup for a single-service host: Marten (shared workflow docs + read-side execution
+    /// projection) plus the Marten-backed <see cref="IWorkflowProvider"/>. Multi-service hosts
+    /// (Runner/API) compose Marten themselves and pick the pieces they need.
+    /// </summary>
     public static IServiceCollection AddActionFlowDb(
         this IServiceCollection services,
         string connectionString,
         bool registerAsWorkflowProvider = true,
         Action<StoreOptions>? configure = null)
     {
-        // NOTE: the WorkflowExecutionStatus projection is registered Async (see ConfigureActionFlowStore),
-        // so a host (ActionFlow.Runner / ActionFlow.API in later phases) must run the async daemon
-        // via .AddAsyncDaemon(...) for the read model to update live. Tests rebuild it explicitly.
         services.AddMarten(options =>
         {
             options.Connection(connectionString);
-
-            // Marten's default (Newtonsoft) leaves untyped Dictionary values as JToken; we rely on
-            // System.Text.Json + JsonElement normalization in StepDocument for property fidelity.
             options.UseSystemTextJsonForSerialization();
-
             options.ConfigureActionFlowStore();
-
+            options.AddExecutionStatusProjection();
             configure?.Invoke(options);
         });
 
@@ -52,18 +47,30 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Applies ActionFlow's document mappings, indexes and projections to a Marten
-    /// <see cref="StoreOptions"/>. Shared so tests can build a store without the DI container.
+    /// Maps the shared <see cref="WorkflowDocument"/> (schema, identity, indexes). Both the API and the
+    /// Runner call this so they see the same workflow definitions. Marten's default (Newtonsoft) leaves
+    /// untyped dictionary values as JToken, so callers should also select System.Text.Json — see
+    /// <c>StepDocument</c> normalization.
     /// </summary>
     public static StoreOptions ConfigureActionFlowStore(this StoreOptions options)
     {
         options.Schema.For<WorkflowDocument>()
+            .DatabaseSchemaName(WorkflowSchemaName)
             .Identity(x => x.Id)
             .Duplicate(x => x.Name)
             .Duplicate(x => x.IsLatest);
 
-        options.Projections.Add<WorkflowExecutionStatusProjection>(ProjectionLifecycle.Async);
+        return options;
+    }
 
+    /// <summary>
+    /// Registers the read-side <see cref="WorkflowExecutionStatusProjection"/>. Only the service that
+    /// owns the execution event streams + debugging read models (the API) should add this. Registered
+    /// Inline so the status is immediately consistent with the appended events (no async daemon needed).
+    /// </summary>
+    public static StoreOptions AddExecutionStatusProjection(this StoreOptions options)
+    {
+        options.Projections.Add<WorkflowExecutionStatusProjection>(ProjectionLifecycle.Inline);
         return options;
     }
 }
