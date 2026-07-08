@@ -86,6 +86,32 @@ export const layoutElements = (
       newEdge.targetHandle = isTreeHorizontal ? Left : Top;
     }
 
+    // Label / colour the branches of control-flow and for-loop nodes: the true
+    // (nested) branch is green, the normal continuation is muted.
+    const sourceTreeNode = tree[sourceNode];
+    const branchChildId = (sourceTreeNode?.data as Record<string, unknown> | undefined)
+      ?.branchChildId as string | undefined;
+    const isBranchingSource =
+      sourceTreeNode?.type === "controlFlow" ||
+      sourceTreeNode?.type === "forLoop";
+
+    if (branchChildId && branchChildId === targetNode) {
+      newEdge.label = sourceTreeNode?.type === "forLoop" ? "loop" : "true";
+      newEdge.style = { stroke: "#16a34a", strokeWidth: 2 };
+      newEdge.labelStyle = { fill: "#15803d", fontWeight: 600, fontSize: 11 };
+      newEdge.labelBgStyle = { fill: "#dcfce7" };
+      newEdge.labelBgPadding = [6, 2];
+      newEdge.labelBgBorderRadius = 4;
+      newEdge.animated = true;
+    } else if (isBranchingSource) {
+      newEdge.label = sourceTreeNode?.type === "forLoop" ? "after" : "false";
+      newEdge.style = { stroke: "#9ca3af" };
+      newEdge.labelStyle = { fill: "#6b7280", fontWeight: 600, fontSize: 11 };
+      newEdge.labelBgStyle = { fill: "#f3f4f6" };
+      newEdge.labelBgPadding = [6, 2];
+      newEdge.labelBgBorderRadius = 4;
+    }
+
     edges.push(newEdge);
   });
 

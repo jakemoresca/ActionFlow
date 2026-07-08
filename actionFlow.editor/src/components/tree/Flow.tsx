@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Background,
   Controls,
@@ -8,12 +9,8 @@ import {
   useNodesState,
   useEdgesState,
   type OnConnect,
-  Panel,
   Node,
   Edge,
-  getIncomers,
-  getOutgoers,
-  getConnectedEdges,
   ConnectionLineType,
 } from "@xyflow/react";
 
@@ -27,10 +24,30 @@ import { generateNode } from "@/modules/nodes/node-generator";
 import { layoutElements, TreeData } from "./layout-elements";
 import { initialTree as defaultInitialTree, treeRootId as defaultTreeRootId } from "./nodes-edges";
 import { Workflow } from '@/modules/workflows/Workflow';
+import { getBranchHead, nodesToTree, treeToRequest } from "@/modules/workflows/mapper";
+import { deleteWorkflow, updateWorkflow } from "@/modules/api/client";
 
-export type FlowData = Workflow;
+export type FlowData = Workflow & { isNew?: boolean };
+
+// Immutably set a (possibly dotted) path on a node data object.
+function setDeep(
+  source: Record<string, unknown>,
+  path: string,
+  value: unknown,
+): Record<string, unknown> {
+  const keys = path.split(".");
+  const root = { ...source };
+  let cursor: Record<string, unknown> = root;
+  for (let i = 0; i < keys.length - 1; i++) {
+    cursor[keys[i]] = { ...((cursor[keys[i]] as Record<string, unknown>) ?? {}) };
+    cursor = cursor[keys[i]] as Record<string, unknown>;
+  }
+  cursor[keys[keys.length - 1]] = value;
+  return root;
+}
 
 export default function App(data: FlowData) {
+  const router = useRouter();
 
   const initialTree = data.tree ?? defaultInitialTree;
   const initialTreeRootId = data.treeRootId ?? defaultTreeRootId;
@@ -55,8 +72,12 @@ export default function App(data: FlowData) {
 
   const [showAddActionModal, setOpenAddActionModal] = useState(false);
   const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
+  // Whether the next added action goes on the selected node's normal flow or
+  // into its true/nested branch (control-flow / for-loop only).
+  const [addTarget, setAddTarget] = useState<"normal" | "branch">("normal");
 
-  const handleAddAction = () => {
+  const handleAddAction = (target: "normal" | "branch" = "normal") => {
+    setAddTarget(target);
     setOpenAddActionModal(true);
   };
 
@@ -72,136 +93,224 @@ export default function App(data: FlowData) {
   };
 
   const handleDeleteNodes = useCallback(() => {
-    const updatedNodes: Record<string | number, TreeData> = {};
+    // Rebuild the tree from live node data (preserving edits), then unlink the
+    // selected nodes and relink around them.
+    const { tree, rootId } = nodesToTree(nodes);
 
     selectedNodes.forEach((selectedNode) => {
-      const selectedNodeTreeProperties = selectedNode.data.treeProperties as TreeData
-      const incomers = getIncomers(selectedNode, nodes, edges);
+      const deleted = tree[selectedNode.id];
+      if (!deleted) return;
 
-      incomers.forEach(incomer => {
-        const incomerTreeProperties = incomer.data.treeProperties as TreeData;
-        incomerTreeProperties.children = selectedNodeTreeProperties.children;
+      const branchId = getBranchHead(deleted);
+      const replacement = (deleted.children ?? []).find((c) => c !== branchId);
 
-        updatedNodes[incomer.id] = {
-          ...incomer,
-          data: incomer.data,
-          ...incomerTreeProperties
-        };
+      Object.values(tree).forEach((node) => {
+        const data = (node.data ?? {}) as Record<string, unknown>;
+        if (data.branchChildId === selectedNode.id) {
+          if (replacement) data.branchChildId = replacement;
+          else delete data.branchChildId;
+        }
+        if (node.children) {
+          const relinked = node.children
+            .map((c) => (c === selectedNode.id ? replacement : c))
+            .filter((c): c is string => !!c);
+          node.children = [...new Set(relinked)];
+        }
       });
 
-      nodes.forEach(node => {
-        const nodeTreeProperties = (node as Node).data.treeProperties as TreeData
-
-        if (node.id == selectedNode.id) {
-          //delete updatedNodes[node.id]
-        }
-        else {
-          updatedNodes[node.id] = {
-            ...node,
-            data: node.data,
-            ...nodeTreeProperties
-          }
-        }
-      })
+      delete tree[selectedNode.id];
     });
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, initialTreeRootId, 'LR');
+    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(
+      tree,
+      rootId || initialTreeRootId,
+      "LR",
+    );
 
     setEdges(layoutedEdges);
     setNodes(layoutedNodes);
-  }, [selectedNodes, nodes, edges, setNodes, setEdges]);
+  }, [selectedNodes, nodes, setNodes, setEdges, initialTreeRootId]);
 
-  const handleAddNode = useCallback((nodeType: string) => {
-    const parentNode = selectedNodes[0];
-    const nodeToAdd = generateNode(nodeType, parentNode);
+  const handleAddNode = useCallback(
+    (nodeType: string) => {
+      const parentSelection = selectedNodes[0];
+      if (!parentSelection) return;
 
-    const parentTreeProperties = parentNode.data.treeProperties as TreeData;
-    const hasChildren = !!parentTreeProperties?.children?.length;
+      // Rebuild the tree from live node data so existing edits are preserved.
+      const { tree, rootId } = nodesToTree(nodes);
+      const parent = tree[parentSelection.id];
+      if (!parent) return;
 
-    const parentChildTreeProperties: TreeData = {
-      id: nodeToAdd.id,
-      type: nodeToAdd.type!,
-      name: nodeToAdd.data.label as string,
-      ...(hasChildren ? { children: parentTreeProperties.children } : {})
-    }
+      const generated = generateNode(nodeType, parentSelection);
+      const newId = generated.id;
 
-    // Build a new tree-properties object instead of mutating the one derived
-    // from state (selectedNodes). The new node becomes the parent's only child.
-    const updatedParentTreeProperties: TreeData = {
-      ...parentTreeProperties,
-      children: [nodeToAdd.id],
-    }
+      const newNode: TreeData = {
+        id: newId,
+        type: generated.type!,
+        name: (generated.data.label as string) ?? nodeType,
+        data: { ...(generated.data as Record<string, unknown>) },
+        children: [],
+      };
 
-    const updatedNodes: Record<string | number, TreeData> = {};
-    nodes.forEach(node => {
-      const nodeTreeProperties = (node as Node).data.treeProperties as TreeData
+      const parentData = (parent.data ?? {}) as Record<string, unknown>;
+      const existingBranch = parentData.branchChildId as string | undefined;
 
-      if (node.id == parentNode.id) {
-        updatedNodes[node.id] = {
-          ...parentNode,
-          data: parentNode.data,
-          ...updatedParentTreeProperties
-        };
+      if (addTarget === "branch") {
+        // Insert at the head of the parent's true branch.
+        if (existingBranch) newNode.children = [existingBranch];
+        parent.data = { ...parentData, branchChildId: newId };
+        const normalNext = (parent.children ?? []).find(
+          (c) => c !== existingBranch,
+        );
+        parent.children = [normalNext, newId].filter(
+          (c): c is string => !!c,
+        );
+      } else {
+        // Insert on the parent's normal flow, pushing the old next down.
+        const normalNext = (parent.children ?? []).find(
+          (c) => c !== existingBranch,
+        );
+        if (normalNext) newNode.children = [normalNext];
+        parent.children = [newId, existingBranch].filter(
+          (c): c is string => !!c,
+        );
       }
-      else {
-        updatedNodes[node.id] = {
-          ...node,
-          data: node.data,
-          ...nodeTreeProperties
-        }
-      }
-    })
 
-    updatedNodes[nodeToAdd.id] = {
-      ...nodeToAdd,
-      data: nodeToAdd.data,
-      ...parentChildTreeProperties
+      tree[newId] = newNode;
+
+      const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(
+        tree,
+        rootId || initialTreeRootId,
+        "LR",
+      );
+
+      setEdges(layoutedEdges);
+      setNodes(layoutedNodes);
+
+      setSelectedNodes([{ ...generated }]);
+      setOpenAddActionModal(false);
+    },
+    [selectedNodes, nodes, addTarget, setNodes, setEdges, initialTreeRootId],
+  );
+
+  const handleNodeDataChange = useCallback(
+    (nodeId: string, propertyName: string, value: unknown) => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id !== nodeId) return node;
+
+          let newData = setDeep(
+            node.data as Record<string, unknown>,
+            propertyName,
+            value,
+          );
+
+          // Keep the tree step name in sync with the editable label so saves
+          // reflect the rename.
+          if (propertyName === "label") {
+            const treeProperties = {
+              ...((newData.treeProperties as Record<string, unknown>) ?? {}),
+              name: value,
+            };
+            newData = { ...newData, treeProperties };
+          }
+
+          return { ...node, data: newData } as CustomNodeType;
+        }),
+      );
+    },
+    [setNodes],
+  );
+
+  const [saving, setSaving] = useState(false);
+
+  const handleSaveWorkflow = useCallback(async () => {
+    const name =
+      data.workflowId ||
+      window.prompt("Workflow name")?.trim() ||
+      "";
+    if (!name) return;
+
+    const { tree, rootId } = nodesToTree(nodes);
+    const request = treeToRequest(name, tree, rootId || initialTreeRootId);
+
+    setSaving(true);
+    try {
+      await updateWorkflow(name, request);
+      // Navigate to the (possibly new) workflow so its id is reflected in the URL.
+      router.push(`/workflows/${encodeURIComponent(name)}`);
+      router.refresh();
+    } catch (err) {
+      window.alert(`Failed to save workflow: ${(err as Error).message}`);
+    } finally {
+      setSaving(false);
     }
+  }, [data.workflowId, nodes, initialTreeRootId, router]);
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = layoutElements(updatedNodes, initialTreeRootId, 'LR');
+  const handleDeleteWorkflow = useCallback(async () => {
+    if (!data.workflowId) return;
+    if (!window.confirm(`Delete workflow "${data.workflowId}"? This removes all versions.`))
+      return;
 
-    setEdges(layoutedEdges);
-    setNodes(layoutedNodes);
+    try {
+      await deleteWorkflow(data.workflowId);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      window.alert(`Failed to delete workflow: ${(err as Error).message}`);
+    }
+  }, [data.workflowId, router]);
 
-    setSelectedNodes([nodeToAdd]);
-    setOpenAddActionModal(false);
-
-  }, [selectedNodes, nodes, edges, setNodes, setEdges, setSelectedNodes, setOpenAddActionModal])
+  // Drive the properties panel from live node state (not the selection
+  // snapshot) so edits are reflected immediately.
+  const selectedNodeId = selectedNodes[0]?.id;
+  const propertiesNode = selectedNodeId
+    ? nodes.find((n) => n.id === selectedNodeId)
+    : undefined;
 
   return (
-    <ReactFlow<CustomNodeType, CustomEdgeType>
-      nodes={nodes}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      edges={edges}
-      edgeTypes={edgeTypes}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      nodesConnectable={true}
-      nodesDraggable={true}
-      elementsSelectable={true}
-      onSelectionChange={handleFlowSelectionChange}
-      fitView
-      className="bg-white dark:bg-gray-900 antialiased"
-    >
-      <Background />
-      <MiniMap />
-
-      <Panel position="top-left">
+    <div className="flex h-screen w-screen overflow-hidden">
+      <aside className="flex h-full w-80 shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <ActionDrawer
+          workflowName={data.workflowId}
           onAddAction={handleAddAction}
           selectedNodes={selectedNodes}
+          propertiesNode={propertiesNode}
+          onNodeDataChange={handleNodeDataChange}
           onDeleteAction={handleDeleteNodes}
+          onSaveWorkflow={handleSaveWorkflow}
+          onDeleteWorkflow={handleDeleteWorkflow}
+          saving={saving}
         />
-      </Panel>
+      </aside>
 
-      <Controls className="left-80" />
+      <div className="h-full flex-1">
+        <ReactFlow<CustomNodeType, CustomEdgeType>
+          nodes={nodes}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          edges={edges}
+          edgeTypes={edgeTypes}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodesConnectable={true}
+          nodesDraggable={true}
+          elementsSelectable={true}
+          onSelectionChange={handleFlowSelectionChange}
+          fitView
+          className="bg-white dark:bg-gray-900 antialiased"
+        >
+          <Background />
+          <MiniMap />
+          <Controls />
 
-      <AddActionModal
-        showModal={showAddActionModal}
-        onCloseModal={handleCloseAddActionModal}
-        onAddNode={handleAddNode}
-      />
-    </ReactFlow>
+          <AddActionModal
+            showModal={showAddActionModal}
+            onCloseModal={handleCloseAddActionModal}
+            onAddNode={handleAddNode}
+          />
+        </ReactFlow>
+      </div>
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import PropertyField from "../controls/property-field";
 
 export type NodePropertiesData = {
   node: Node;
+  onChange?: (propertyName: string, value: unknown) => void;
 };
 
 export type NodePropertyDefinition = {
@@ -25,11 +26,9 @@ export enum NodePropertyType {
   TextArea,
 }
 
-export default function NodeProperties({ node }: NodePropertiesData) {
+export default function NodeProperties({ node, onChange }: NodePropertiesData) {
   const data = node.data as BaseNodeData;
   const nodePropertyDefinitions = getNodePropertyDefinitions(node.type!);
-
-  const handleChange = () => {};
 
   const createNodePropertyFields = () => {
     const fields = nodePropertyDefinitions.map((propertyDefinition) => {
@@ -39,10 +38,10 @@ export default function NodeProperties({ node }: NodePropertiesData) {
             <Label>{propertyDefinition.propertyLabel}</Label>
           </div>
           <PropertyField
-            nodeType={node.type!}
+            nodeId={node.id}
             properties={data}
             propertyDefinition={propertyDefinition}
-            handlePropertyChange={handleChange}
+            onChange={onChange}
           />
         </div>
       );

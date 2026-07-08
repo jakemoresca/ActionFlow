@@ -25,13 +25,10 @@ export function generateNode(nodeType: string, parentNode: Node): Node {
 
 function generateVariableNode(parentNode: Node): Node {
   const nodeData: VariableNodeData = {
-    label: NodeTypeKeys.variable.name
+    label: NodeTypeKeys.variable.name,
   }
 
-  nodeData.variables = {
-    age: "1",
-    canWalk: "false"
-  }
+  nodeData.variables = {};
 
   const data: Node = {
     id: uuidv4(),
@@ -47,12 +44,11 @@ function generateVariableNode(parentNode: Node): Node {
 function generateSendHttpCallNode(parentNode: Node): Node {
   const nodeData: SendHttpCallNodeData = {
     label: NodeTypeKeys.sendHttpCall.name,
-    url: "http://localhost",
-    method: "GET"
+    url: "",
+    method: "GET",
   }
 
-  nodeData.headers = {
-  }
+  nodeData.headers = {};
 
   const data: Node = {
     id: uuidv4(),
@@ -88,8 +84,8 @@ function generateControlFlowNode(parentNode: Node): Node {
 function generateForLoopNode(parentNode: Node): Node {
   const nodeData: ForLoopNodeData = {
     label: NodeTypeKeys.forLoop.name,
-    initializerVariable: "x",
-    initialValue: "0",
+    initializerVariable: "",
+    initialValue: "",
     loopCondition: "",
     iterator: ""
   }

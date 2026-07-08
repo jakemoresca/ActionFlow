@@ -3,7 +3,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 // PostgreSQL — Marten document + event store. Persistent so data survives AppHost restarts.
 var postgres = builder.AddPostgres("postgres")
     .WithDataVolume()
-    .WithLifetime(ContainerLifetime.Persistent)
+    .WithLifetime(ContainerLifetime.Session)
     .WithPgWeb();
 
 var actionflowDb = postgres.AddDatabase("actionflow");
@@ -11,7 +11,7 @@ var actionflowDb = postgres.AddDatabase("actionflow");
 // Kafka broker with the bundled Kafka UI for browsing topics/messages.
 var kafka = builder.AddKafka("kafka")
     .WithDataVolume()
-    .WithLifetime(ContainerLifetime.Persistent)
+    .WithLifetime(ContainerLifetime.Session)
     .WithKafkaUI();
 
 // Component 3 — the Runner worker. Waits for its dependencies, and receives their connection
