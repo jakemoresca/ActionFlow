@@ -3,9 +3,11 @@ import { BaseNodeData } from "../nodes/BaseNode";
 import { Label } from "flowbite-react";
 import { getNodePropertyDefinitions } from "@/modules/nodes/node-properties-definition-provider";
 import PropertyField from "../controls/property-field";
+import OutputProperties from "./OutputProperties";
 
 export type NodePropertiesData = {
   node: Node;
+  onChange?: (propertyName: string, value: unknown) => void;
 };
 
 export type NodePropertyDefinition = {
@@ -25,11 +27,24 @@ export enum NodePropertyType {
   TextArea,
 }
 
-export default function NodeProperties({ node }: NodePropertiesData) {
+export default function NodeProperties({ node, onChange }: NodePropertiesData) {
   const data = node.data as BaseNodeData;
-  const nodePropertyDefinitions = getNodePropertyDefinitions(node.type!);
 
-  const handleChange = () => {};
+  // The fixed terminal / entry nodes get dedicated treatment.
+  const treeName = (node.data?.treeProperties as { name?: string } | undefined)
+    ?.name;
+  if (treeName === "output") {
+    return <OutputProperties node={node} onChange={onChange} />;
+  }
+  if (treeName === "root") {
+    return (
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Workflow entry point — no editable properties.
+      </p>
+    );
+  }
+
+  const nodePropertyDefinitions = getNodePropertyDefinitions(node.type!);
 
   const createNodePropertyFields = () => {
     const fields = nodePropertyDefinitions.map((propertyDefinition) => {
@@ -39,10 +54,10 @@ export default function NodeProperties({ node }: NodePropertiesData) {
             <Label>{propertyDefinition.propertyLabel}</Label>
           </div>
           <PropertyField
-            nodeType={node.type!}
+            nodeId={node.id}
             properties={data}
             propertyDefinition={propertyDefinition}
-            handlePropertyChange={handleChange}
+            onChange={onChange}
           />
         </div>
       );
