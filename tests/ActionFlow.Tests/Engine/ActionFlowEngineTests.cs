@@ -65,6 +65,40 @@ namespace ActionFlow.Tests.Engine
             Assert.AreEqual(1, output.OutputParameters["age"]);
         }
 
+        [TestMethod]
+        public async Task When_output_all_parameters_is_set_it_should_emit_the_whole_context()
+        {
+            //Arrange
+            var workflowProvider = Substitute.For<IWorkflowProvider>();
+            var steps = new List<Step> { new("noop", "Variable", []) };
+            var workflow = new Workflow("Test Workflow Rule 1", steps,
+            [
+                new() { Name = "declared", Expression = "age" }
+            ])
+            { OutputAllParameters = true };
+
+            workflowProvider.GetWorkflowAsync("Test Workflow Rule 1", Arg.Any<CancellationToken>())
+                .Returns(workflow);
+
+            var stepActionFactory = Substitute.For<IStepActionFactory>();
+            var stepExecutionEvaluator = Substitute.For<IStepExecutionEvaluator>();
+            var actionFlowEngine = new ActionFlowEngine(workflowProvider, stepActionFactory, stepExecutionEvaluator);
+
+            var executionContext = new ExecutionContext(actionFlowEngine);
+            executionContext.AddOrUpdateParameter(new Parameter { Name = "age", Expression = "21" });
+            executionContext.AddOrUpdateParameter(new Parameter { Name = "name", Expression = "\"Bob\"" });
+            stepExecutionEvaluator.EvaluateAndRunStep(steps[0], executionContext, stepActionFactory)
+                .ReturnsForAnyArgs(executionContext);
+
+            //Act
+            var output = await actionFlowEngine.ExecuteWorkflowAsync("Test Workflow Rule 1", executionContext);
+
+            //Assert — declared output plus every context parameter.
+            Assert.AreEqual(21, output.OutputParameters["declared"]);
+            Assert.AreEqual(21, output.OutputParameters["age"]);
+            Assert.AreEqual("Bob", output.OutputParameters["name"]);
+        }
+
         private static List<Workflow> CreateFakeWorkflows()
         {
             List<Workflow> workflows = [];

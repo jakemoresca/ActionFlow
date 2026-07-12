@@ -1,7 +1,12 @@
 using ActionFlow.Api.Endpoints;
 using ActionFlow.Contracts;
 using ActionFlow.DB.Extensions;
+using ActionFlow.DB.Providers;
+using ActionFlow.Engine.Providers;
+using ActionFlow.Extensions;
+using Confluent.Kafka;
 using Marten;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Wolverine;
 using Wolverine.Kafka;
 using Wolverine.Marten;
@@ -30,7 +35,12 @@ builder.Services.AddMarten(options =>
 builder.UseWolverine(opts =>
 {
     opts.UseRuntimeCompilation();
-    opts.UseKafka(kafka).AutoProvision();
+    opts.UseKafka(kafka)
+        .AutoProvision()
+        // Read from the start of the topic so the status/timeline consumer cannot miss execution
+        // events emitted by the Runner before this consumer finishes its first group join. After the
+        // first commit, Wolverine resumes from the committed offset, so events are not reprocessed.
+        .ConfigureConsumers(config => config.AutoOffsetReset = AutoOffsetReset.Earliest);
 
     // Outbound (transactional outbox): execute commands + workflow-published events.
     opts.PublishMessage<ExecuteWorkflow>().ToKafkaTopic(Topics.ExecuteCommands);
@@ -39,6 +49,14 @@ builder.UseWolverine(opts =>
     // Inbound: execution events → appended to Marten streams for status/timeline.
     opts.ListenToKafkaTopic(Topics.ExecutionEvents);
 });
+
+// ActionFlow engine for synchronous test runs (POST /workflows/{name}/test). Resolves workflow
+// definitions from the shared document store (latest version). Registered scoped so each request
+// gets a fresh engine (no stale workflow cache after a save). The async Runner remains the path for
+// real executions.
+builder.Services.UseActionFlowEngine();
+builder.Services.RemoveAll<IWorkflowProvider>();
+builder.Services.AddScoped<IWorkflowProvider, DocumentStoreWorkflowProvider>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();

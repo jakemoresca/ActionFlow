@@ -50,6 +50,13 @@ public record ExecuteRequest(
 
 public record ExecuteResponse(Guid ExecutionId);
 
+/// <summary>
+/// Result of a synchronous test run (POST /workflows/{name}/test): the workflow is executed
+/// in-process against the given inputs and its output returned immediately, without the async
+/// Runner/Kafka pipeline.
+/// </summary>
+public record TestRunResponse(bool Success, Dictionary<string, string> Output, string? Error);
+
 // ---- Debug / query ----
 
 public record ExecutionStatusResponse(

@@ -49,6 +49,15 @@ namespace ActionFlow.Engine
 				result.OutputParameters = GetOutputParameters(workflow.OutputParameters, updatedExecutionContext);
 			}
 
+			if (workflow.OutputAllParameters)
+			{
+				// Emit the whole final context, without overriding explicitly declared outputs.
+				foreach (var parameter in updatedExecutionContext.GetAllParameters())
+				{
+					result.OutputParameters.TryAdd(parameter.Key, parameter.Value);
+				}
+			}
+
 			return await Task.FromResult(result);
 		}
 

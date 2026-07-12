@@ -2,8 +2,11 @@ using ActionFlow.Api.Contracts;
 using ActionFlow.Contracts;
 using ActionFlow.DB.Documents;
 using ActionFlow.DB.ReadModels;
+using ActionFlow.Domain.Engine;
+using ActionFlow.Engine;
 using Marten;
 using Wolverine.Marten;
+using ExecutionContext = ActionFlow.Engine.ExecutionContext;
 
 namespace ActionFlow.Api.Endpoints;
 
@@ -13,6 +16,7 @@ public static class ExecutionEndpoints
     public static IEndpointRouteBuilder MapExecutionEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/workflows/{name}/execute", ExecuteAsync).WithTags("Execute");
+        app.MapPost("/workflows/{name}/test", TestAsync).WithTags("Execute");
 
         var executions = app.MapGroup("/executions").WithTags("Executions");
         executions.MapGet("/", QueryAsync);
@@ -65,6 +69,43 @@ public static class ExecutionEndpoints
         await session.SaveChangesAsync(ct);
 
         return Results.Accepted($"/executions/{executionId}", new ExecuteResponse(executionId));
+    }
+
+    /// <summary>
+    /// Runs a workflow synchronously in-process and returns its output immediately — the editor's
+    /// "Test" path. Bypasses the async Runner/Kafka pipeline so the result is deterministic and
+    /// available in the response (no polling of the execution read model).
+    /// </summary>
+    private static async Task<IResult> TestAsync(
+        string name, ExecuteRequest? request, IActionFlowEngine engine)
+    {
+        request ??= new ExecuteRequest();
+
+        var executionContext = new ExecutionContext(engine);
+        foreach (var input in request.Inputs ?? new Dictionary<string, string>())
+        {
+            executionContext.AddOrUpdateParameter(new Parameter { Name = input.Key, Expression = input.Value });
+        }
+
+        try
+        {
+            var result = await engine.ExecuteWorkflowAsync(name, executionContext);
+            var output = result.OutputParameters
+                .ToDictionary(entry => entry.Key, entry => entry.Value?.ToString() ?? string.Empty);
+
+            return Results.Ok(new TestRunResponse(true, output, null));
+        }
+        catch (KeyNotFoundException)
+        {
+            return Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Workflow not found",
+                detail: $"No workflow named '{name}'.");
+        }
+        catch (Exception exception)
+        {
+            // Surface engine/expression errors to the editor rather than a 500 — a failed test run is
+            // a normal, inspectable outcome.
+            return Results.Ok(new TestRunResponse(false, new Dictionary<string, string>(), exception.Message));
+        }
     }
 
     private static async Task<IResult> GetStatusAsync(Guid id, IQuerySession session, CancellationToken ct)

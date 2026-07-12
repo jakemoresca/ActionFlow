@@ -126,4 +126,77 @@ public class WorkflowApiTests
         var response = await _client.PostAsJsonAsync("/workflows/does-not-exist/execute", new ExecuteRequest());
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    [TestMethod]
+    public async Task Test_run_executes_synchronously_and_returns_output()
+    {
+        var name = "test-" + Guid.NewGuid().ToString("N");
+        var request = new WorkflowDefinitionRequest(
+            name,
+            [
+                new StepDto("set canVote", "SetVariable", null, new Dictionary<string, object>
+                {
+                    ["Variables"] = new Dictionary<string, string> { ["canVote"] = "age >= 18" }
+                })
+            ],
+            [new ParameterDto("canVote", "canVote")]);
+        await _client.PostAsJsonAsync("/workflows", request);
+
+        var run = await _client.PostAsJsonAsync($"/workflows/{name}/test",
+            new ExecuteRequest(new Dictionary<string, string> { ["age"] = "20" }));
+
+        run.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await run.Content.ReadFromJsonAsync<TestRunResponse>();
+        result!.Success.Should().BeTrue();
+        result.Output["canVote"].Should().Be("True");
+    }
+
+    [TestMethod]
+    public async Task Test_run_executes_control_flow_branch_and_outputs_all()
+    {
+        var name = "cf-" + Guid.NewGuid().ToString("N");
+
+        // Mirrors the editor's control-flow workflow: init sets canWalk=true/success=false, then a
+        // control-flow branch sets success=true when canWalk == true. Output-all captures the context.
+        var request = new WorkflowDefinitionRequest(
+            name,
+            [
+                new StepDto("init", "SetVariable", null, new Dictionary<string, object>
+                {
+                    ["Variables"] = new Dictionary<string, string> { ["canWalk"] = "true", ["success"] = "false" }
+                }),
+                new StepDto("check", "ControlFlow", null, new Dictionary<string, object>
+                {
+                    ["Conditions"] = new object[]
+                    {
+                        new Dictionary<string, object>
+                        {
+                            ["Expression"] = "canWalk == true",
+                            ["Steps"] = new object[]
+                            {
+                                new Dictionary<string, object>
+                                {
+                                    ["name"] = "assign",
+                                    ["actionType"] = "SetVariable",
+                                    ["properties"] = new Dictionary<string, object>
+                                    {
+                                        ["Variables"] = new Dictionary<string, string> { ["success"] = "true" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            ],
+            OutputParameters: null,
+            Metadata: new Dictionary<string, string> { ["outputAll"] = "true" });
+        await _client.PostAsJsonAsync("/workflows", request);
+
+        var run = await _client.PostAsJsonAsync($"/workflows/{name}/test", new ExecuteRequest());
+
+        run.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await run.Content.ReadFromJsonAsync<TestRunResponse>();
+        result!.Success.Should().BeTrue();
+        result.Output["success"].Should().Be("True");
+    }
 }

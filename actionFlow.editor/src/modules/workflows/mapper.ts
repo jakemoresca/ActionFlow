@@ -195,6 +195,7 @@ export function responseToWorkflow(res: WorkflowResponse): Workflow {
     data: {
       label: "Return",
       outputParameters: res.outputParameters ?? [],
+      outputAll: res.metadata?.outputAll === "true",
     },
   };
 
@@ -260,10 +261,12 @@ export function treeToRequest(
   rootId: string,
 ): WorkflowDefinitionRequest {
   const root = tree[rootId];
-  const metadata =
-    ((root?.data as Record<string, unknown> | undefined)
-      ?.metadata as Record<string, string>) ?? {};
+  const metadata: Record<string, string> = {
+    ...(((root?.data as Record<string, unknown> | undefined)
+      ?.metadata as Record<string, string>) ?? {}),
+  };
   let outputParameters: ApiParameter[] = [];
+  let outputAll = false;
 
   const visited = new Set<string>();
 
@@ -280,6 +283,7 @@ export function treeToRequest(
       if (node.name === "output") {
         outputParameters =
           (data.outputParameters as ApiParameter[]) ?? outputParameters;
+        outputAll = data.outputAll === true;
         break;
       }
 
@@ -312,6 +316,10 @@ export function treeToRequest(
   };
 
   const steps = walk(root?.children?.[0]);
+
+  if (outputAll) metadata.outputAll = "true";
+  else delete metadata.outputAll;
+
   return { name, steps, outputParameters, metadata };
 }
 

@@ -14,6 +14,7 @@ import { Node } from "@xyflow/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NodeProperties from "./NodeProperties";
+import TestWorkflowModal from "./TestWorkflowModal";
 import { NodeTypeKeys } from "../nodes";
 import {
   createWorkflow,
@@ -27,6 +28,7 @@ export type ActionDrawerData = {
   onDeleteAction?: () => void;
   onSaveWorkflow?: () => void;
   onDeleteWorkflow?: () => void;
+  onRunWorkflow?: (inputs: Record<string, string>) => Promise<string>;
   selectedNodes?: Node[];
   propertiesNode?: Node;
   onNodeDataChange?: (
@@ -43,6 +45,7 @@ export default function ActionDrawer({
   onDeleteAction,
   onSaveWorkflow,
   onDeleteWorkflow,
+  onRunWorkflow,
   selectedNodes,
   propertiesNode,
   onNodeDataChange,
@@ -51,6 +54,7 @@ export default function ActionDrawer({
   const router = useRouter();
   const [workflows, setWorkflows] = useState<WorkflowSummary[]>([]);
   const [loadingList, setLoadingList] = useState(true);
+  const [showTestModal, setShowTestModal] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -219,22 +223,42 @@ export default function ActionDrawer({
         </Accordion>
       </div>
 
-      <div className="flex gap-2 border-t border-gray-200 p-3 dark:border-gray-700">
+      <div className="flex flex-col gap-2 border-t border-gray-200 p-3 dark:border-gray-700">
         <Button
-          className="flex-1"
-          disabled={saving}
-          onClick={() => onSaveWorkflow && onSaveWorkflow()}
+          color="green"
+          onClick={() => setShowTestModal(true)}
+          disabled={!onRunWorkflow}
         >
-          {saving ? "Saving…" : "Save"}
+          Test
         </Button>
-        <Button
-          color="red"
-          disabled={!workflowName}
-          onClick={() => onDeleteWorkflow && onDeleteWorkflow()}
-        >
-          Delete
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            className="flex-1"
+            disabled={saving}
+            onClick={() => onSaveWorkflow && onSaveWorkflow()}
+          >
+            {saving ? "Saving…" : "Save"}
+          </Button>
+          <Button
+            color="red"
+            disabled={!workflowName}
+            onClick={() => onDeleteWorkflow && onDeleteWorkflow()}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
+
+      <TestWorkflowModal
+        show={showTestModal}
+        workflowName={workflowName}
+        onClose={() => setShowTestModal(false)}
+        onRun={(inputs) =>
+          onRunWorkflow
+            ? onRunWorkflow(inputs)
+            : Promise.resolve("Run is unavailable.")
+        }
+      />
     </div>
   );
 }

@@ -47,7 +47,18 @@ public static class WorkflowProviderBuiltinExtensions
 			}
 			using (JsonDocument document = JsonDocument.ParseValue(ref reader))
 			{
-				return document.RootElement.Clone().ToString();
+				var root = document.RootElement.Clone();
+
+				// Objects become a string->string dictionary so dictionary-typed action
+				// properties (e.g. SetVariable "Variables", SendHttpCall "Headers") are usable
+				// rather than raw JSON text. Each value stays a string expression.
+				if (root.ValueKind == JsonValueKind.Object)
+				{
+					return root.EnumerateObject()
+						.ToDictionary(property => property.Name, property => property.Value.ToString());
+				}
+
+				return root.ToString();
 			}
 		}
 

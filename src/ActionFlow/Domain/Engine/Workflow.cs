@@ -13,5 +13,12 @@
 		/// </summary>
 		public List<Step> Steps { get; } = steps;
 		public List<Parameter>? OutputParameters { get; } = outputParameters;
+
+		/// <summary>
+		/// When true, the engine emits every persistent parameter from the final
+		/// execution context as output (in addition to any declared
+		/// <see cref="OutputParameters"/>).
+		/// </summary>
+		public bool OutputAllParameters { get; set; }
 	}
 }

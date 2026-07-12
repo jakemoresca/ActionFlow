@@ -25,7 +25,12 @@ import { layoutElements, TreeData } from "./layout-elements";
 import { initialTree as defaultInitialTree, treeRootId as defaultTreeRootId } from "./nodes-edges";
 import { Workflow } from '@/modules/workflows/Workflow';
 import { getBranchHead, nodesToTree, treeToRequest } from "@/modules/workflows/mapper";
-import { deleteWorkflow, updateWorkflow } from "@/modules/api/client";
+import {
+  deleteWorkflow,
+  testWorkflow,
+  updateWorkflow,
+  type TestRunResponse,
+} from "@/modules/api/client";
 
 export type FlowData = Workflow & { isNew?: boolean };
 
@@ -44,6 +49,15 @@ function setDeep(
   }
   cursor[keys[keys.length - 1]] = value;
   return root;
+}
+
+// Render a synchronous test-run result as a readable block for the Test dialog.
+function formatTestResult(result: TestRunResponse): string {
+  if (!result.success) {
+    return `Run failed:\n${result.error ?? "Unknown error"}`;
+  }
+
+  return ["Output:", JSON.stringify(result.output ?? {}, null, 2)].join("\n");
 }
 
 export default function App(data: FlowData) {
@@ -100,6 +114,8 @@ export default function App(data: FlowData) {
     selectedNodes.forEach((selectedNode) => {
       const deleted = tree[selectedNode.id];
       if (!deleted) return;
+      // The entry marker and the Return terminal are structural — keep them.
+      if (deleted.name === "root" || deleted.name === "output") return;
 
       const branchId = getBranchHead(deleted);
       const replacement = (deleted.children ?? []).find((c) => c !== branchId);
@@ -224,19 +240,24 @@ export default function App(data: FlowData) {
 
   const [saving, setSaving] = useState(false);
 
-  const handleSaveWorkflow = useCallback(async () => {
+  // Serialize the live tree and persist it. Returns the saved name, or null if
+  // the user cancelled the name prompt. Does not navigate.
+  const persistCurrentWorkflow = useCallback(async (): Promise<string | null> => {
     const name =
-      data.workflowId ||
-      window.prompt("Workflow name")?.trim() ||
-      "";
-    if (!name) return;
+      data.workflowId || window.prompt("Workflow name")?.trim() || "";
+    if (!name) return null;
 
     const { tree, rootId } = nodesToTree(nodes);
     const request = treeToRequest(name, tree, rootId || initialTreeRootId);
+    await updateWorkflow(name, request);
+    return name;
+  }, [data.workflowId, nodes, initialTreeRootId]);
 
+  const handleSaveWorkflow = useCallback(async () => {
     setSaving(true);
     try {
-      await updateWorkflow(name, request);
+      const name = await persistCurrentWorkflow();
+      if (!name) return;
       // Navigate to the (possibly new) workflow so its id is reflected in the URL.
       router.push(`/workflows/${encodeURIComponent(name)}`);
       router.refresh();
@@ -245,7 +266,29 @@ export default function App(data: FlowData) {
     } finally {
       setSaving(false);
     }
-  }, [data.workflowId, nodes, initialTreeRootId, router]);
+  }, [persistCurrentWorkflow, router]);
+
+  // Save the current workflow, execute it with the given inputs, and poll for
+  // the result. Returns a human-readable result string for the Test dialog.
+  const handleRunWorkflow = useCallback(
+    async (inputs: Record<string, string>): Promise<string> => {
+      let name: string | null;
+      try {
+        name = await persistCurrentWorkflow();
+      } catch (err) {
+        return `Failed to save workflow before running:\n${(err as Error).message}`;
+      }
+      if (!name) return "Run cancelled — a workflow name is required.";
+
+      try {
+        const result = await testWorkflow(name, inputs);
+        return formatTestResult(result);
+      } catch (err) {
+        return `Test run failed:\n${(err as Error).message}\n\nIs the API running?`;
+      }
+    },
+    [persistCurrentWorkflow],
+  );
 
   const handleDeleteWorkflow = useCallback(async () => {
     if (!data.workflowId) return;
@@ -280,6 +323,7 @@ export default function App(data: FlowData) {
           onDeleteAction={handleDeleteNodes}
           onSaveWorkflow={handleSaveWorkflow}
           onDeleteWorkflow={handleDeleteWorkflow}
+          onRunWorkflow={handleRunWorkflow}
           saving={saving}
         />
       </aside>

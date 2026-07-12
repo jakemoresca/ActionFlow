@@ -1,6 +1,5 @@
-using System.Globalization;
-using System.Text.Json;
 using ActionFlow.Domain.Engine;
+using ActionFlow.Engine;
 
 namespace ActionFlow.DB.Documents;
 
@@ -47,6 +46,9 @@ public class WorkflowDocument
         };
     }
 
+    /// <summary>Metadata flag opting the workflow into emitting the entire final context as output.</summary>
+    public const string OutputAllMetadataKey = "outputAll";
+
     public Workflow ToWorkflow()
     {
         var steps = Steps.Select(s => s.ToStep()).ToList();
@@ -54,7 +56,10 @@ public class WorkflowDocument
             .Select(p => new Parameter { Name = p.Name, Expression = p.Expression })
             .ToList();
 
-        return new Workflow(Name, steps, outputs);
+        var outputAll = Metadata.TryGetValue(OutputAllMetadataKey, out var flag)
+            && string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
+
+        return new Workflow(Name, steps, outputs) { OutputAllParameters = outputAll };
     }
 }
 
@@ -75,33 +80,11 @@ public class StepDocument
 
     public Step ToStep()
     {
-        var properties = Properties.ToDictionary(kvp => kvp.Key, kvp => Normalize(kvp.Value));
+        // Normalization (JsonElement -> string / Dictionary / nested Step / ScopedWorkflow) is shared
+        // with the engine so persisted and file-based workflows resolve to the same shapes.
+        var properties = StepPropertyNormalizer.Normalize(Properties);
         return new Step(Name, ActionType, properties, ConditionExpression);
     }
-
-    /// <summary>
-    /// After a JSON round-trip (System.Text.Json), property values come back as <see cref="JsonElement"/>.
-    /// Coerce them to strings to match the engine's "every property value is a string expression"
-    /// contract and the <c>ObjectToStringConverter</c> used by the JSON provider.
-    /// </summary>
-    private static object Normalize(object value) => value switch
-    {
-        JsonElement element => NormalizeElement(element),
-        _ => value
-    };
-
-    private static object NormalizeElement(JsonElement element) => element.ValueKind switch
-    {
-        JsonValueKind.String => element.GetString() ?? string.Empty,
-        JsonValueKind.Number => element.TryGetInt64(out var l)
-            ? l.ToString(CultureInfo.InvariantCulture)
-            : element.GetDouble().ToString(CultureInfo.InvariantCulture),
-        JsonValueKind.True => "true",
-        JsonValueKind.False => "false",
-        JsonValueKind.Null => string.Empty,
-        // Objects/arrays are kept as their raw JSON text, mirroring ObjectToStringConverter.
-        _ => element.GetRawText()
-    };
 }
 
 public class ParameterDocument
